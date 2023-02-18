@@ -1,24 +1,14 @@
-import Grid from "@mui/material/Grid";
 import Form from "../../components/Form/Form";
 
 const Home = () => {
   return (
-    <Grid container height={"100svh"}>
-      <Grid
-        item
-        sx={{
-          display: { xs: "none", sm: "none", md: "block" },
-          backgroundImage: "url('https://picsum.photos/1280/720')",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-        }}
-        md={7}
-        border={1}
-      />
-      <Grid item xs={12} md={5} border={1}>
+    <div className="grid grid-cols-1 md:grid-cols-2 w-full h-full">
+      <h1 className="text-red-700">salighakl</h1>
+      <img className="md:hidden" src="https://picsum.photos/1920/1280" />
+      <div>
         <Form />
-      </Grid>
-    </Grid>
+      </div>
+    </div>
   );
 };
 
