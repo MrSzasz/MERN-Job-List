@@ -5,7 +5,7 @@ import Profile from "./pages/Profile/Profile";
 
 function App() {
   return (
-    <main className="bg-gray-900 font-mono antialiased text-white min-h-[100svh]">
+    <main className="bg-gray-900 font-mono antialiased text-white min-h-[100svh] overflow-x-hidden">
       <Route path="/" component={Home} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/user" component={Profile} />

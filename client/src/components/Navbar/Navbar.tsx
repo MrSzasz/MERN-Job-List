@@ -1,6 +1,6 @@
 const Navbar = () => {
   return (
-    <div>Navbar</div>
+    <div className="h-16 w-screen bg-main"></div>
   )
 }
 
