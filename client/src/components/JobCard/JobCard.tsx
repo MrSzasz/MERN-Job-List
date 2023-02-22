@@ -18,12 +18,14 @@ const JobCard = ({ title, description, link }) => {
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
           {description}
         </p>
-        <div class>
+        <div className="flex w-full justify-between flex-wrap">
           <button className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-blue-800 focus:ring-4 bg-blue-900 focus:ring-blue-800">
             Read more
             <AiOutlineArrowRight />
           </button>
-          <button className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-blue-800 focus:ring-4 bg-blue-900 focus:ring-blue-800">Delete <HiOutlineTrash/></button>
+          <button className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800">
+            Delete <HiOutlineTrash />
+          </button>
         </div>
       </div>
     </div>
