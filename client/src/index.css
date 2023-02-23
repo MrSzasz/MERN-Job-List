@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* =============== Forms styles =============== */
+
+@layer components {
+
+    .success {
+        @apply text-green-500 italic
+    }
+
+    .rejected {
+        @apply text-red-500 italic
+    }
+
+    .processing {
+        @apply text-yellow-500 italic
+    }
+
+    .applied {
+        @apply text-blue-500 italic
+    }
+
+    .later {
+        @apply text-gray-500 italic
+    }
+}

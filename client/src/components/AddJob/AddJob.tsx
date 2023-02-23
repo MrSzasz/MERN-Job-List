@@ -1,29 +1,15 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-
-interface JobInterface {
-  title: string;
-  link: string;
-  description: string;
-  status: "success" | "rejected" | "processing" | "applied" | "later";
-  date: string;
-  company: string;
-  // requirements: string[];
-  requirements: string;
-  extra: string;
-}
+import { useForm, SubmitHandler } from "react-hook-form";
+import { postDataToBack } from "../../helpers/requests";
+import { JobInterface } from "../../interfaces/jobsInterfaces";
 
 const AddJob = () => {
-  const [job, setJob] = useState<JobInterface>();
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm();
+  } = useForm<JobInterface>();
 
-  const getDataFromJobForm = (data: JobInterface) => {
-    console.log(data);
-  };
+  const getDataFromJobForm: SubmitHandler<JobInterface> = (data) => postDataToBack({ ...data, date: Date() });
 
   return (
     <form

@@ -4,17 +4,8 @@ import JobCard from "../../components/JobCard/JobCard";
 import Navbar from "../../components/Navbar/Navbar";
 import PopUpModal from "../../components/PopUpModal/PopUpModal";
 import AddJob from "../../components/AddJob/AddJob";
-
-interface JobInterface {
-  title: string;
-  link: string;
-  description: string;
-  status: "success" | "rejected" | "processing" | "hold";
-  date: string;
-  company: string;
-  requirements: string[];
-  extra: string;
-}
+import JobDetails from "../../components/JobDetails/JobDetails";
+import { JobInterface } from "../../interfaces/jobsInterfaces";
 
 const Dashboard = () => {
   const jobs: Array<JobInterface> = [
@@ -23,10 +14,10 @@ const Dashboard = () => {
       link: "https://www.linkedin.com/jobs/search/?alertAction=viewjobs&currentJobId=3490778142&f_TPR=a1676746546-&keywords=Desarrollador&savedSearchId=1731042626&searchAlertRefId=e6c55f9d-d904-4c1f-b620-71aab66c5836",
       description:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni, sit?",
-      status: "hold",
+      status: "applied",
       date: "11/11/11",
       company: "Lenovo",
-      requirements: ["HTML", "CSS", "JavaScript"],
+      requirements: "HTML, CSS, JavaScript",
       extra: "lorem ipsum dolor sit amet",
     },
     {
@@ -37,7 +28,7 @@ const Dashboard = () => {
       status: "rejected",
       date: "11/11/11",
       company: "Lenovo",
-      requirements: ["HTML", "CSS", "JavaScript"],
+      requirements: "HTML, CSS, JavaScript",
       extra: "lorem ipsum dolor sit amet",
     },
     {
@@ -48,7 +39,7 @@ const Dashboard = () => {
       status: "success",
       date: "11/11/11",
       company: "Lenovo",
-      requirements: ["HTML", "CSS", "JavaScript"],
+      requirements: "HTML, CSS, JavaScript",
       extra: "lorem ipsum dolor sit amet",
     },
     {
@@ -59,7 +50,7 @@ const Dashboard = () => {
       status: "rejected",
       date: "11/11/11",
       company: "Lenovo",
-      requirements: ["HTML", "CSS", "JavaScript"],
+      requirements: "HTML, CSS, JavaScript",
 
       extra: "lorem ipsum dolor sit amet",
     },
@@ -71,7 +62,7 @@ const Dashboard = () => {
       status: "processing",
       date: "11/11/11",
       company: "Lenovo",
-      requirements: ["HTML", "CSS", "JavaScript"],
+      requirements: "HTML, CSS, JavaScript",
 
       extra: "lorem ipsum dolor sit amet",
     },
@@ -101,7 +92,8 @@ const Dashboard = () => {
           </button>
         </div>
       </main>
-        <AddJob />
+      {/* <AddJob /> */}
+      <JobDetails />
       {/* <PopUpModal>
         <AddJob />
       </PopUpModal> */}
