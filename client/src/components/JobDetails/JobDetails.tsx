@@ -62,13 +62,13 @@ const JobDetails = () => {
     "block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer";
 
   return (
-    <div className="p-8 grid place-content-center items-center h-full">
+    <div className="grid place-content-center items-center h-full">
       {editMode ? (
         <>
           <h3
             id="editJobTitle"
             contentEditable={editMode}
-            className="text-center pb-4 border-0 border-b-2 border-gray-300"
+            className="flex items-center text-3xl uppercase gap-2 border-0 border-b-2 border-gray-300"
           >
             {job.title}
           </h3>
@@ -79,7 +79,6 @@ const JobDetails = () => {
           >
             {job.link}
           </small>
-          <BiLinkExternal />
           {invalidLink && (
             <small className="text-red-600">Please insert a valid link</small>
           )}
@@ -87,7 +86,7 @@ const JobDetails = () => {
       ) : (
         <a
           href={job.link}
-          className="flex items-center text-3xl uppercase gap-2"
+          className="flex items-center text-3xl uppercase gap-2 hover:text-blue-600 w-fit transition-all"
         >
           <h3 contentEditable={editMode} className="text-center">
             {job.title}
@@ -111,13 +110,14 @@ const JobDetails = () => {
       {editMode ? (
         <select
           id="editJobStatus"
-          className={`bg-transparent text-xs italic w-fit`}
+          className={`bg-gray-900 text-xs italic w-fit pb-3 pt-2`}
+          defaultValue={job.status}
         >
-          <option value="success">Success</option>
-          <option value="rejected">Rejected</option>
-          <option value="processing">Processing</option>
-          <option value="applied">Applied</option>
-          <option value="later">Save for later</option>
+          <option value="success" className="success">Success</option>
+          <option value="rejected" className="rejected">Rejected</option>
+          <option value="processing" className="processing">Processing</option>
+          <option value="applied" className="applied">Applied</option>
+          <option value="later" className="later">Save for later</option>
         </select>
       ) : (
         <small className={`${job.status} pb-3`}>{job.status}</small>
@@ -160,7 +160,7 @@ const JobDetails = () => {
           </>
         )}
       </div>
-      <div className="flex justify-between py-8">
+      <div className="flex justify-between pt-8">
         {editMode ? (
           <button
             onClick={() => handleUpdate()}

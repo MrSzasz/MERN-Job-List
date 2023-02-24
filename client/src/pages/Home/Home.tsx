@@ -10,7 +10,7 @@ const Home = () => {
         />
         <div className="absolute h-full w-full  backdrop-blur-sm inset-0 grid place-content-center">
           <div className="absolute w-full h-full bg-black opacity-75 -z-10"></div>
-          <h1 className="text-5xl">TITLE OF THE PAGE</h1>
+          <h1 className="text-5xl">Job Vault</h1>
           <p>
             Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ad, ipsum!
           </p>

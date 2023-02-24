@@ -9,14 +9,17 @@ const AddJob = () => {
     handleSubmit,
   } = useForm<JobInterface>();
 
-  const getDataFromJobForm: SubmitHandler<JobInterface> = (data) => postDataToBack({ ...data, date: Date() });
+  const getDataFromJobForm: SubmitHandler<JobInterface> = (data) =>
+    postDataToBack({ ...data, date: Date() });
 
   return (
     <form
       onSubmit={handleSubmit(getDataFromJobForm)}
-      className="p-8 grid place-content-center items-center h-full overflow-y-scroll"
+      className="grid items-center h-full px-8 max-w-lg"
     >
-      <h1 className="text-center pb-4">Add job</h1>
+      <h3 className="flex items-center text-3xl uppercase gap-2 pb-3 m-auto ">
+        Add job
+      </h3>
       <div className="relative z-0 w-full mb-6 group">
         <input
           type="text"

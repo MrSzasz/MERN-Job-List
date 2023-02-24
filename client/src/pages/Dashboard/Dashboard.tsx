@@ -1,4 +1,4 @@
-import { GrFormAdd } from "react-icons/gr";
+import { IoMdAdd } from "react-icons/io";
 import { BsFilter } from "react-icons/bs";
 import JobCard from "../../components/JobCard/JobCard";
 import Navbar from "../../components/Navbar/Navbar";
@@ -6,8 +6,15 @@ import PopUpModal from "../../components/PopUpModal/PopUpModal";
 import AddJob from "../../components/AddJob/AddJob";
 import JobDetails from "../../components/JobDetails/JobDetails";
 import { JobInterface } from "../../interfaces/jobsInterfaces";
+import { useState } from "react";
+import Profile from "../../components/Profile/Profile";
 
 const Dashboard = () => {
+  const [openModal, setOpenModal] = useState(false);
+  const [jobDetailsModalComponent, setJobDetailsModalComponent] =
+    useState(true);
+  const [userTabOpened, setUserTabOpened] = useState(false);
+
   const jobs: Array<JobInterface> = [
     {
       title: "dev",
@@ -68,11 +75,19 @@ const Dashboard = () => {
     },
   ];
 
+  const controlModal = (jobDetails: boolean) => {
+    setOpenModal((current) => !current);
+    setJobDetailsModalComponent(jobDetails ? true : false);
+  };
+
+  const controlUserTab = () => {
+    setUserTabOpened((current) => !current);
+  };
+
   return (
     <>
-      <Navbar />
-      <main className="grid grid-cols-2 relative">
-        {/* <div className="hidden md:flex col-end-1 min-h-screen h-full w-12 hover:w-20 transition-all bg-main"></div> */}
+      <Navbar controlUsetTab={controlUserTab} />
+      <div className="grid grid-cols-2 relative">
         <div className="col-end-12 p-8 flex flex-wrap gap-4 w-full">
           {jobs.map((job, i) => (
             <JobCard
@@ -80,23 +95,23 @@ const Dashboard = () => {
               link={job.link}
               title={job.title}
               description={job.description}
+              functionModal={controlModal}
             />
           ))}
         </div>
-        <div className="fixed bottom-4 right-4 h-10 w-10 rounded-full bg-main text-2xl transition-all border border-white hover:w-fit flex gap-4 px-4 hover:px-4 justify-center items-center group">
-          <button className=" hidden group-hover:block">
-            <BsFilter />
-          </button>
-          <button>
-            <GrFormAdd color="white" />
-          </button>
-        </div>
-      </main>
-      {/* <AddJob /> */}
-      <JobDetails />
-      {/* <PopUpModal>
-        <AddJob />
-      </PopUpModal> */}
+        <button
+          onClick={() => controlModal(false)}
+          className="fixed bottom-4 right-4 h-10 w-10 rounded-full bg-main text-2xl transition-all border border-white flex justify-center items-center"
+        >
+          <IoMdAdd color="white" />
+        </button>
+        {userTabOpened && <Profile controlUserTab={controlUserTab}/>}
+      </div>
+      {openModal && (
+        <PopUpModal modalControls={controlModal}>
+          {jobDetailsModalComponent ? <JobDetails /> : <AddJob />}
+        </PopUpModal>
+      )}
     </>
   );
 };

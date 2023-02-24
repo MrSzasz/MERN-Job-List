@@ -1,7 +1,7 @@
 import { Route } from "wouter";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Home from "./pages/Home/Home";
-import Profile from "./pages/Profile/Profile";
+import Profile from "./components/Profile/Profile";
 
 function App() {
   return (
