@@ -57,6 +57,7 @@ export const postDataToBack = async (
       }
     );
 
+    // console.log(data);
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {

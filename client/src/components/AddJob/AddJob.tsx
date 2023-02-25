@@ -1,6 +1,7 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { postDataToBack } from "../../helpers/requests";
 import { JobInterface } from "../../interfaces/jobsInterfaces";
+import toast, { Toaster } from "react-hot-toast";
 
 const AddJob = () => {
   const {
@@ -9,12 +10,28 @@ const AddJob = () => {
     handleSubmit,
   } = useForm<JobInterface>();
 
-  const getDataFromJobForm: SubmitHandler<JobInterface> = (data) =>
-    postDataToBack({ ...data, date: Date() });
+  const postNewJobOnDatabase: SubmitHandler<JobInterface> = async (data) => {
+    try {
+      const returnedData = await toast.promise(
+        postDataToBack({ ...data, date: Date() }, "http://localhost:3001/jobs"),
+        {
+          loading: "Loading...",
+          success: "Job added successfully",
+          error: "Error adding job, please try again later",
+        },
+        {
+          style: { backgroundColor: "#1F2937", color: "#FFFFFF" },
+        }
+      );
+      console.log(returnedData);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <form
-      onSubmit={handleSubmit(getDataFromJobForm)}
+      onSubmit={handleSubmit(postNewJobOnDatabase)}
       className="grid items-center h-full px-8 max-w-lg"
     >
       <h3 className="flex items-center text-3xl uppercase gap-2 pb-3 m-auto ">
@@ -23,10 +40,11 @@ const AddJob = () => {
       <div className="relative z-0 w-full mb-6 group">
         <input
           type="text"
-          {...register("title", { required: true })}
+          {...register("title", { required: true, maxLength: 50 })}
           id="addTitle"
           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
+          maxLength={50}
         />
         <label
           htmlFor="addTitle"
@@ -34,9 +52,14 @@ const AddJob = () => {
         >
           Job title
         </label>
-        {errors.title?.type === "required" && (
-          <small className="text-red-500">Insert a title for the job</small>
-        )}
+        {
+          (errors.title?.type === "required" && (
+            <small className="text-red-500">Insert a title for the job</small>
+          ),
+          errors.title?.type === "maxLength" && (
+            <small className="text-red-500">The title is too long</small>
+          ))
+        }
       </div>
       <div className="relative z-0 w-full mb-6 group">
         <input
@@ -71,6 +94,7 @@ const AddJob = () => {
           id="addDescription"
           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
+          rows={10}
         />
         <label
           htmlFor="addDescription"
@@ -89,14 +113,24 @@ const AddJob = () => {
           <select
             {...register("status", { required: true })}
             id="jobStatus"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-gray-800 border-0 border-b-2 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
           >
-            <option value="later">Save for later</option>
-            <option value="applied">Applied</option>
-            <option value="processed">Processed</option>
-            <option value="success">Success</option>
-            <option value="rejected">Rejected</option>
+            <option className="later" value="later">
+              Save for later
+            </option>
+            <option className="applied" value="applied">
+              Applied
+            </option>
+            <option className="processed" value="processed">
+              Processed
+            </option>
+            <option className="success" value="success">
+              Success
+            </option>
+            <option className="rejected" value="rejected">
+              Rejected
+            </option>
           </select>
           <label
             htmlFor="jobStatus"
@@ -133,6 +167,7 @@ const AddJob = () => {
           id="jobRequirements"
           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
+          rows={10}
         />
         <label
           htmlFor="jobRequirements"
@@ -152,6 +187,7 @@ const AddJob = () => {
           id="jobExtras"
           className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
           placeholder=" "
+          rows={10}
         />
         <label
           htmlFor="jobExtras"
@@ -162,9 +198,10 @@ const AddJob = () => {
       </div>
       <input
         type="submit"
-        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         value="Submit"
       />
+      <Toaster />
     </form>
   );
 };

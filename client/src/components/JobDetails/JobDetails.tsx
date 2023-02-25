@@ -3,23 +3,9 @@ import { AiFillEdit, AiOutlineCheck } from "react-icons/ai";
 import { BiLinkExternal } from "react-icons/bi";
 import { HiOutlineTrash } from "react-icons/hi";
 
-const JobDetails = () => {
+const JobDetails = ({ job }) => {
   const [editMode, setEditMode] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
-
-  const job = {
-    title: "DISEÑADOR WEB (64035)",
-    link: "https://www.empleosit.com.ar/display-job/64035/Dise%C3%B1ador-WEB.html",
-    description:
-      "Responsabilidades:\n-Construcción de sistemas eficientes y reutilizables en HTML y CSS + JS.\n-Trabajar con el equipo para la generación de nuevas Apps.\n-Identificar y comunicar mejores prácticas para la ingeniería front-end.\n-Diseño y revisión de código/",
-    status: "rejected",
-    date: "3/8/2022",
-    company: "CyS",
-    requirements:
-      "-Tecnologías web abiertas HTML, CSS, JQUERY, JS. -Frameworks, Adobe XD, HTML 5 y CSS + JQuery y JScript, Drupal. GitHub\n-WAI-ARIA, y React (no excluyente).\n-Herramientas colaborativas (Mural, Miro, Drive).\n-Diseño centrado en las personas, WAI-ARIA y accesibilidad.",
-    extra:
-      "Beneficios\n-Revisión del sueldo\n-Canasta saludable\n-Descuentos en capacitaciones de la UTN\n-Horario: Lunes a Viernes de 9 a 17 o 10 a 18hs.\n-Trabajo en oficina 1 día en Parque Patricios y 4 remotos",
-  };
 
   const checkValidLink = () => {
     const linkElement = document.querySelector("#editJobLink")?.textContent!;
@@ -53,6 +39,10 @@ const JobDetails = () => {
     } else {
       setInvalidLink(true);
     }
+  };
+
+  const handleDelete = (jobId) => {
+    console.log(jobId);
   };
 
   const editable =
@@ -113,17 +103,28 @@ const JobDetails = () => {
           className={`bg-gray-900 text-xs italic w-fit pb-3 pt-2`}
           defaultValue={job.status}
         >
-          <option value="success" className="success">Success</option>
-          <option value="rejected" className="rejected">Rejected</option>
-          <option value="processing" className="processing">Processing</option>
-          <option value="applied" className="applied">Applied</option>
-          <option value="later" className="later">Save for later</option>
+          <option value="success" className="success">
+            Success
+          </option>
+          <option value="rejected" className="rejected">
+            Rejected
+          </option>
+          <option value="processing" className="processing">
+            Processing
+          </option>
+          <option value="applied" className="applied">
+            Applied
+          </option>
+          <option value="later" className="later">
+            Save for later
+          </option>
         </select>
       ) : (
         <small className={`${job.status} pb-3`}>{job.status}</small>
       )}
       <hr />
       <div className="relative z-0 w-full">
+        <h4 className="text-xl uppercase underline pt-4">Description</h4>
         <p
           id="editJobDescription"
           contentEditable={editMode}
@@ -176,7 +177,10 @@ const JobDetails = () => {
             Edit <AiFillEdit />
           </button>
         )}
-        <button className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800">
+        <button
+          onClick={() => handleDelete(job._id)}
+          className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
+        >
           Delete <HiOutlineTrash />
         </button>
       </div>
