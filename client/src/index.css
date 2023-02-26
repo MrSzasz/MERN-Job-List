@@ -2,28 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* =============== Forms styles =============== */
 
 @layer components {
+  .success-text-style {
+    @apply text-green-500 italic;
+  }
 
-    .success {
-        @apply text-green-500 italic
-    }
+  .rejected-text-style {
+    @apply text-red-500 italic;
+  }
 
-    .rejected {
-        @apply text-red-500 italic
-    }
+  .processing-text-style {
+    @apply text-yellow-500 italic;
+  }
 
-    .processing {
-        @apply text-yellow-500 italic
-    }
+  .applied-text-style {
+    @apply text-blue-500 italic;
+  }
 
-    .applied {
-        @apply text-blue-500 italic
-    }
-
-    .later {
-        @apply text-gray-500 italic
-    }
+  .later-text-style {
+    @apply text-gray-500 italic;
+  }
 }

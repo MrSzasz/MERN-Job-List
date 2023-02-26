@@ -5,7 +5,7 @@ import { JobInterface } from "../interfaces/jobsInterfaces";
 
 // Get all jobs from the database
 
-export const getDataFromDB = async (url: string) => {
+export const axios_getData = async (url: string) => {
   try {
     const { data } = await axios.get<JobInterface[]>(
       url ? url : "http://localhost:3001/jobs"
@@ -33,15 +33,31 @@ code
 
 // Delete job information from the database
 
-/*
-
-code
-
-*/
+export const axios_deleteData = async (idToDelete: string, url: string) => {
+  try {
+    const { data } = await axios.delete(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      data: { id: idToDelete },
+    });
+    console.log(data);
+    return data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.log("error message: ", err.message);
+      return err.message;
+    } else {
+      console.log("unexpected error: ", err);
+      return "An unexpected error occurred";
+    }
+  }
+};
 
 // Post a new job
 
-export const postDataToBack = async (
+export const axios_addData = async (
   dataFromForm: JobInterface,
   url: string
 ) => {

@@ -3,7 +3,7 @@ import { AiFillEdit, AiOutlineCheck } from "react-icons/ai";
 import { BiLinkExternal } from "react-icons/bi";
 import { HiOutlineTrash } from "react-icons/hi";
 
-const JobDetails = ({ job }) => {
+const JobDetails = ({ job, deleteJobFunction, functionModal }) => {
   const [editMode, setEditMode] = useState(false);
   const [invalidLink, setInvalidLink] = useState(false);
 
@@ -14,6 +14,11 @@ const JobDetails = ({ job }) => {
       /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi;
 
     return pattern.test(linkElement);
+  };
+
+  const handleDeleteJobOnModal = (jobID: string) => {
+    deleteJobFunction(jobID);
+    functionModal();
   };
 
   const handleUpdate = () => {
@@ -41,8 +46,16 @@ const JobDetails = ({ job }) => {
     }
   };
 
-  const handleDelete = (jobId) => {
-    console.log(jobId);
+  // const handleDelete = (jobId) => {
+  //   console.log(jobId);
+  // };
+
+  const textColorVariants = {
+    success: "success-text-style",
+    rejected: "rejected-text-style",
+    processing: "processing-text-style",
+    applied: "applied-text-style",
+    later: "later-text-style",
   };
 
   const editable =
@@ -76,6 +89,7 @@ const JobDetails = ({ job }) => {
       ) : (
         <a
           href={job.link}
+          target="_blank"
           className="flex items-center text-3xl uppercase gap-2 hover:text-blue-600 w-fit transition-all"
         >
           <h3 contentEditable={editMode} className="text-center">
@@ -100,27 +114,29 @@ const JobDetails = ({ job }) => {
       {editMode ? (
         <select
           id="editJobStatus"
-          className={`bg-gray-900 text-xs italic w-fit pb-3 pt-2`}
+          className={`bg-gray-800 text-xs italic w-fit pb-3 pt-2`}
           defaultValue={job.status}
         >
-          <option value="success" className="success">
+          <option value="success" className="success-text-style">
             Success
           </option>
-          <option value="rejected" className="rejected">
+          <option value="rejected" className="rejected-text-style">
             Rejected
           </option>
-          <option value="processing" className="processing">
+          <option value="processing" className="processing-text-style">
             Processing
           </option>
-          <option value="applied" className="applied">
+          <option value="applied" className="applied-text-style">
             Applied
           </option>
-          <option value="later" className="later">
+          <option value="later" className="later-text-style">
             Save for later
           </option>
         </select>
       ) : (
-        <small className={`${job.status} pb-3`}>{job.status}</small>
+        <small className={`${textColorVariants[job.status]} pb-3`}>
+          {job.status}
+        </small>
       )}
       <hr />
       <div className="relative z-0 w-full">
@@ -178,7 +194,7 @@ const JobDetails = ({ job }) => {
           </button>
         )}
         <button
-          onClick={() => handleDelete(job._id)}
+          onClick={() => handleDeleteJobOnModal(job._id)}
           className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
         >
           Delete <HiOutlineTrash />

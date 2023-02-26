@@ -7,19 +7,20 @@ import JobDetails from "../../components/JobDetails/JobDetails";
 import { JobInterface } from "../../interfaces/jobsInterfaces";
 import { useState, useEffect } from "react";
 import Profile from "../../components/Profile/Profile";
-import { getDataFromDB } from "../../helpers/requests";
+import { axios_addData, axios_deleteData, axios_getData } from "../../helpers/requests";
+import toast, { Toaster } from "react-hot-toast";
 
 const Dashboard = () => {
-  const [openModal, setOpenModal] = useState(false);
+  const [openModal, setOpenModal] = useState<Boolean>(false);
   const [jobDetailsModalComponent, setJobDetailsModalComponent] =
     useState(true);
   const [userTabOpened, setUserTabOpened] = useState(false);
   const [jobsFromDB, setJobsFromDB] = useState<Array<JobInterface>>([]);
   const [jobForDetails, setJobForDetails] = useState<JobInterface>({});
 
-  const controlModal = (jobDetails: boolean, id) => {
+  const controlModal = (jobDetails?: boolean, id?) => {
     setOpenModal((current) => !current);
-    setJobDetailsModalComponent(jobDetails ? true : false);
+    setJobDetailsModalComponent(jobDetails);
     setJobForDetails(jobsFromDB.find((job) => job._id === id));
   };
 
@@ -27,9 +28,41 @@ const Dashboard = () => {
     setUserTabOpened((current) => !current);
   };
 
+  const handleDeleteJob = async (jobID) => {
+    await axios_deleteData(jobID, "http://localhost:3001/jobs");
+    setJobsFromDB(jobsFromDB.filter((job) => job._id !== jobID));
+  };
+
   const getJobsFromDatabase = async () => {
-    const jobs = await getDataFromDB("http://localhost:3001/jobs");
+    const jobs = await axios_getData("http://localhost:3001/jobs");
     setJobsFromDB(jobs);
+  };
+
+  const timeFormat = new Intl.DateTimeFormat("en-us", {
+    dateStyle: "short",
+  });
+
+  const handleAddJob = async (data: JobInterface) => {
+    // jobsFromDB.push(data);
+    try {
+      const returnedData = await toast.promise(
+        axios_addData(
+          { ...data, date: timeFormat.format(new Date()) },
+          "http://localhost:3001/jobs"
+        ),
+        {
+          loading: "Loading...",
+          success: "Job added successfully",
+          error: "Error adding job, please try again later",
+        },
+        {
+          style: { backgroundColor: "#1F2937", color: "#FFFFFF" },
+        }
+      );
+      jobsFromDB.push(returnedData as JobInterface);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   useEffect(() => {
@@ -38,12 +71,17 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar controlUsetTab={controlUserTab} />
-      <div className="grid grid-cols-2 relative">
-        <div className="col-end-12 p-8 flex flex-wrap gap-4 w-full">
+      <Navbar controlUserTab={controlUserTab} />
+      <div className="relative">
+        <div className="p-8 flex flex-wrap gap-4 w-full items-stretch">
           {jobsFromDB.length !== 0 ? (
             jobsFromDB.map((job, i) => (
-              <JobCard key={i} job={job} functionModal={controlModal} />
+              <JobCard
+                key={i}
+                job={job}
+                functionModal={controlModal}
+                deleteJobFunction={handleDeleteJob}
+              />
             ))
           ) : (
             <div className="h-full w-screen grid place-content-center">
@@ -62,9 +100,13 @@ const Dashboard = () => {
       {openModal && (
         <PopUpModal modalControls={controlModal}>
           {jobDetailsModalComponent ? (
-            <JobDetails job={jobForDetails} />
+            <JobDetails
+              functionModal={controlModal}
+              job={jobForDetails}
+              deleteJobFunction={handleDeleteJob}
+            />
           ) : (
-            <AddJob />
+            <AddJob addJobFunction={handleAddJob} />
           )}
         </PopUpModal>
       )}

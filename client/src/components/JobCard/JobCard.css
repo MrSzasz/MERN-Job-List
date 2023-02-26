@@ -1,3 +1,10 @@
+.previewTitle {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .previewText {
     display: -webkit-box;
     -webkit-line-clamp: 3;

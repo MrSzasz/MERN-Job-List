@@ -6,21 +6,16 @@ module.exports = {
 
     jobs_createNewJob: (req, res) => {
         try {
-            // console.log(req.body)
-            // res.json(req.body)
             const job = new jobModel(req.body)
-            job.save((err) => {
+            job.save((err, result) => {
                 if (err) console.error(err)
-            })
-            res.status(201).json({
-                status: "success"
+                res.send(result);
             })
         } catch (err) {
             console.log(err)
             res.status(409).json({
                 message: err.message
             })
-
         }
     },
 
@@ -61,8 +56,12 @@ module.exports = {
 
     job_deleteJobOnDatabase: (req, res) => {
         try {
-            res.send("hi, delete")
-
+            jobModel.findByIdAndDelete(req.body.id, (err, data) => {
+                if (err) console.error(err);
+                res.status(201).json({
+                    status: "success"
+                })
+            })
         } catch (err) {
             console.log(err)
             res.status(409).json({

@@ -1,37 +1,18 @@
 import { useForm, SubmitHandler } from "react-hook-form";
-import { postDataToBack } from "../../helpers/requests";
 import { JobInterface } from "../../interfaces/jobsInterfaces";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
-const AddJob = () => {
+const AddJob = ({addJobFunction}) => {
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<JobInterface>();
 
-  const postNewJobOnDatabase: SubmitHandler<JobInterface> = async (data) => {
-    try {
-      const returnedData = await toast.promise(
-        postDataToBack({ ...data, date: Date() }, "http://localhost:3001/jobs"),
-        {
-          loading: "Loading...",
-          success: "Job added successfully",
-          error: "Error adding job, please try again later",
-        },
-        {
-          style: { backgroundColor: "#1F2937", color: "#FFFFFF" },
-        }
-      );
-      console.log(returnedData);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   return (
     <form
-      onSubmit={handleSubmit(postNewJobOnDatabase)}
+      onSubmit={handleSubmit(addJobFunction)}
       className="grid items-center h-full px-8 max-w-lg"
     >
       <h3 className="flex items-center text-3xl uppercase gap-2 pb-3 m-auto ">
