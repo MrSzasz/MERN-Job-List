@@ -1,5 +1,5 @@
 import axios from "axios";
-import { JobInterface } from "../interfaces/jobsInterfaces";
+import { JobInterface, UserInterface } from "../interfaces/jobsInterfaces";
 
 /* ============================== JOBS ============================== */
 
@@ -75,13 +75,42 @@ export const axios_deleteData = async (idToDelete: string, url: string) => {
 
 // Post a new job
 
+// export const axios_addData = async (
+//   dataFromForm: JobInterface | UserInterface,
+//   url: string
+// ) => {
+//   try {
+//     const { data } = await axios.post<JobInterface>(url, dataFromForm, {
+//       headers: {
+//         "Content-Type": "application/json",
+//         Accept: "application/json",
+//       },
+//     });
+
+//     // console.log(data);
+//     return data;
+//   } catch (err) {
+//     if (axios.isAxiosError(err)) {
+//       console.log("error message: ", err.message);
+//       return err.message;
+//     } else {
+//       console.log("unexpected error: ", err);
+//       return "An unexpected error occurred";
+//     }
+//   }
+// };
+
+/* ============================== USERS ============================== */
+
+// Create a new user or job
+
 export const axios_addData = async (
-  dataFromForm: JobInterface,
+  dataFromForm: JobInterface | UserInterface,
   url: string
 ) => {
   try {
-    const { data } = await axios.post<JobInterface>(
-      url ? url : "http://localhost:3001/jobs",
+    const { data } = await axios.post<JobInterface | UserInterface>(
+      url,
       dataFromForm,
       {
         headers: {
@@ -90,8 +119,6 @@ export const axios_addData = async (
         },
       }
     );
-
-    // console.log(data);
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -103,16 +130,6 @@ export const axios_addData = async (
     }
   }
 };
-
-/* ============================== USERS ============================== */
-
-// Create a new user
-
-/*
-
-code
-
-*/
 
 // Get user information from the database
 

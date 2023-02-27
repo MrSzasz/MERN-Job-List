@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Link } from "wouter";
+import { axios_addData } from "../../helpers/requests";
 
 const Form = () => {
   const [registerForm, setRegisterForm] = useState(false);
@@ -12,7 +13,7 @@ const Form = () => {
   } = useForm();
 
   const getLoginData = (data) => {
-    console.log(data);
+    axios_addData(data, "http://localhost:3001/users")
   };
 
   const changeFormToRegister = () => {

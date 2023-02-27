@@ -24,3 +24,9 @@ export interface JobInterface {
   requirements: string;
   extra?: string | null;
 }
+
+export interface UserInterface {
+  mail: string;
+  password: string;
+  jobs: [] | JobInterface[];
+}
