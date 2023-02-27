@@ -11,6 +11,7 @@ import {
   axios_addData,
   axios_deleteData,
   axios_getData,
+  axios_updateData,
 } from "../../helpers/requests";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -35,6 +36,11 @@ const Dashboard = () => {
   const handleDeleteJob = async (jobID) => {
     await axios_deleteData(jobID, "http://localhost:3001/jobs");
     setJobsFromDB(jobsFromDB.filter((job) => job._id !== jobID));
+  };
+
+  const handleUpdateJob = (id, jobForUpdate) => {
+    jobsFromDB[jobsFromDB.findIndex((job) => job._id === id)] = jobForUpdate;
+    axios_updateData(jobForUpdate, "http://localhost:3001/jobs");
   };
 
   const getJobsFromDatabase = async () => {
@@ -108,6 +114,7 @@ const Dashboard = () => {
               functionModal={controlModal}
               job={jobForDetails}
               deleteJobFunction={handleDeleteJob}
+              updateJobFunction={handleUpdateJob}
             />
           ) : (
             <AddJob addJobFunction={handleAddJob} />

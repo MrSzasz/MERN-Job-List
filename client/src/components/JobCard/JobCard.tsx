@@ -43,8 +43,8 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
               src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${job.link}`}
               alt="af"
             />
-            <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white previewTitle">
-              {job.title}
+            <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white capitalize previewTitle">
+              {(job.title).toLowerCase()}
             </h5>
           </div>
           <small

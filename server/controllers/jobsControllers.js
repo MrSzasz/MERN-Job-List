@@ -42,9 +42,14 @@ module.exports = {
 
     jobs_updateJobOnDatabase: (req, res) => {
         try {
-            console.log(req.body)
-            res.send(req.body)
-
+            // console.log(req.body)
+            // res.send(req.body)
+            jobModel.findByIdAndUpdate(req.body._id,
+                req.body,
+                (err) => {
+                    if (err) console.error(err);
+                    res.send("job updated successfully!")
+                })
         } catch (err) {
             console.log(err)
             res.status(409).json({
