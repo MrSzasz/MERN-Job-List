@@ -25,11 +25,29 @@ export const axios_getData = async (url: string) => {
 
 // Edit job from the database
 
-/*
-
-code
-
-*/
+export const axios_updateData = async (
+  dataToUpdate: JobInterface,
+  url: string
+) => {
+  try {
+    const { data } = await axios.put(url, dataToUpdate, {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
+    console.log(data);
+    return data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      console.log("error message: ", err.message);
+      return err.message;
+    } else {
+      console.log("unexpected error: ", err);
+      return "An unexpected error occurred";
+    }
+  }
+};
 
 // Delete job information from the database
 

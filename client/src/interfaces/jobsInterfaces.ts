@@ -22,5 +22,5 @@ export interface JobInterface {
   date: string;
   company: string;
   requirements: string;
-  extra?: string;
+  extra?: string | null;
 }

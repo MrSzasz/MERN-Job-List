@@ -2,6 +2,8 @@ import { useState } from "react";
 import { AiFillEdit, AiOutlineCheck } from "react-icons/ai";
 import { BiLinkExternal } from "react-icons/bi";
 import { HiOutlineTrash } from "react-icons/hi";
+import { axios_updateData } from "../../helpers/requests";
+import { JobInterface } from "../../interfaces/jobsInterfaces";
 
 const JobDetails = ({ job, deleteJobFunction, functionModal }) => {
   const [editMode, setEditMode] = useState(false);
@@ -23,32 +25,50 @@ const JobDetails = ({ job, deleteJobFunction, functionModal }) => {
 
   const handleUpdate = () => {
     if (checkValidLink()) {
-      console.log({
-        title: document.querySelector("#editJobTitle")?.textContent,
-        link: document.querySelector("#editJobLink")?.textContent,
+      const jobToUpdate: JobInterface = {
+        title: (document.querySelector("#editJobTitle") as HTMLInputElement)
+          .textContent!,
+        link: (document.querySelector("#editJobLink") as HTMLInputElement)
+          .textContent!,
         description: (
           document.querySelector("#editJobDescription") as HTMLElement
-        ).innerText,
+        ).innerText!,
         status: (document.querySelector("#editJobStatus") as HTMLInputElement)
           .value,
-        company: document.querySelector("#editJobCompany")?.textContent,
+        company: (document.querySelector("#editJobCompany") as HTMLInputElement)
+          .textContent!,
         requirements: (
           document.querySelector("#editJobRequirements") as HTMLElement
         ).innerText,
         extra:
           (document.querySelector("#editJobExtra") as HTMLElement).innerText ||
           null,
-      });
+      };
+      // console.log({
+      //   title: document.querySelector("#editJobTitle")?.textContent,
+      //   link: document.querySelector("#editJobLink")?.textContent,
+      //   description: (
+      //     document.querySelector("#editJobDescription") as HTMLElement
+      //   ).innerText,
+      //   status: (document.querySelector("#editJobStatus") as HTMLInputElement)
+      //     .value,
+      //   company: document.querySelector("#editJobCompany")?.textContent,
+      //   requirements: (
+      //     document.querySelector("#editJobRequirements") as HTMLElement
+      //   ).innerText,
+      //   extra:
+      //     (document.querySelector("#editJobExtra") as HTMLElement).innerText ||
+      //     null,
+      // });
+
+      // console.log(jobToUpdate);
+      axios_updateData(jobToUpdate, "http://localhost:3001/jobs")
       setEditMode((current) => !current);
       setInvalidLink(false);
     } else {
       setInvalidLink(true);
     }
   };
-
-  // const handleDelete = (jobId) => {
-  //   console.log(jobId);
-  // };
 
   const textColorVariants = {
     success: "success-text-style",
@@ -193,12 +213,14 @@ const JobDetails = ({ job, deleteJobFunction, functionModal }) => {
             Edit <AiFillEdit />
           </button>
         )}
-        <button
-          onClick={() => handleDeleteJobOnModal(job._id)}
-          className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
-        >
-          Delete <HiOutlineTrash />
-        </button>
+        {!editMode && (
+          <button
+            onClick={() => handleDeleteJobOnModal(job._id)}
+            className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
+          >
+            Delete <HiOutlineTrash />
+          </button>
+        )}
       </div>
     </div>
   );

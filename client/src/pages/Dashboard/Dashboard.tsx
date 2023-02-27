@@ -7,7 +7,11 @@ import JobDetails from "../../components/JobDetails/JobDetails";
 import { JobInterface } from "../../interfaces/jobsInterfaces";
 import { useState, useEffect } from "react";
 import Profile from "../../components/Profile/Profile";
-import { axios_addData, axios_deleteData, axios_getData } from "../../helpers/requests";
+import {
+  axios_addData,
+  axios_deleteData,
+  axios_getData,
+} from "../../helpers/requests";
 import toast, { Toaster } from "react-hot-toast";
 
 const Dashboard = () => {

@@ -42,7 +42,8 @@ module.exports = {
 
     jobs_updateJobOnDatabase: (req, res) => {
         try {
-            res.send("hi, put")
+            console.log(req.body)
+            res.send(req.body)
 
         } catch (err) {
             console.log(err)
