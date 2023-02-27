@@ -5,7 +5,6 @@ import {
   statusColorsVariants,
   JobInterface,
 } from "../../interfaces/jobsInterfaces";
-import { axios_deleteData } from "../../helpers/requests";
 
 interface JobCard__Props {
   job: JobInterface;
@@ -32,7 +31,7 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
 
   return (
     <div
-      className={`transition-all max-w-sm rounded-lg bg-gray-800 shadow-sm hover:shadow-2xl border-2 border-gray-800 hover:border-gray-700 basis-[100%] ${borderColorVariants}`}
+      className={`transition-all max-w-sm rounded-lg bg-gray-800 shadow-sm hover:shadow-2xl border-2 border-gray-800 basis-[100%] ${borderColorVariants[job.status]}`}
     >
       <div className="p-5 h-full flex flex-col justify-between">
         <div className="flex flex-wrap">

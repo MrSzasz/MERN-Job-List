@@ -1,14 +1,28 @@
-import { useForm, SubmitHandler } from "react-hook-form";
-import { JobInterface } from "../../interfaces/jobsInterfaces";
+import { useForm } from "react-hook-form";
+import {
+  JobInterface,
+  statusColorsVariants,
+} from "../../interfaces/jobsInterfaces";
 import { Toaster } from "react-hot-toast";
+import { useState } from "react";
 
-const AddJob = ({addJobFunction}) => {
+const AddJob = ({ addJobFunction }) => {
+  const [selectedStatus, setSelectedStatus] = useState("later");
+
   const {
     register,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<JobInterface>();
 
+  const textColorVariants: statusColorsVariants = {
+    success: "success-text-style",
+    rejected: "rejected-text-style",
+    processing: "processing-text-style",
+    applied: "applied-text-style",
+    later: "later-text-style",
+  };
 
   return (
     <form
@@ -29,7 +43,7 @@ const AddJob = ({addJobFunction}) => {
         />
         <label
           htmlFor="addTitle"
-          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
         >
           Job title
         </label>
@@ -56,7 +70,7 @@ const AddJob = ({addJobFunction}) => {
         />
         <label
           htmlFor="addLink"
-          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
         >
           Link
         </label>
@@ -79,7 +93,7 @@ const AddJob = ({addJobFunction}) => {
         />
         <label
           htmlFor="addDescription"
-          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-7 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-7"
         >
           Description
         </label>
@@ -94,28 +108,31 @@ const AddJob = ({addJobFunction}) => {
           <select
             {...register("status", { required: true })}
             id="jobStatus"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-gray-800 border-0 border-b-2 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+            onChange={() =>
+              setSelectedStatus(document.getElementById("jobStatus")?.value)
+            }
+            className={`block py-2.5 px-0 w-full text-sm bg-gray-800 border-0 border-b-2 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer ${textColorVariants[selectedStatus]}`}
             placeholder=" "
           >
-            <option className="later" value="later">
+            <option className="later-text-style" value="later">
               Save for later
             </option>
-            <option className="applied" value="applied">
+            <option className="applied-text-style" value="applied">
               Applied
             </option>
-            <option className="processed" value="processed">
+            <option className="processed-text-style" value="processed">
               Processed
             </option>
-            <option className="success" value="success">
+            <option className="success-text-style" value="success">
               Success
             </option>
-            <option className="rejected" value="rejected">
+            <option className="rejected-text-style" value="rejected">
               Rejected
             </option>
           </select>
           <label
             htmlFor="jobStatus"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Status
           </label>
@@ -133,7 +150,7 @@ const AddJob = ({addJobFunction}) => {
           />
           <label
             htmlFor="addCompany"
-            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Company
           </label>
@@ -152,7 +169,7 @@ const AddJob = ({addJobFunction}) => {
         />
         <label
           htmlFor="jobRequirements"
-          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-7 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-7"
         >
           Requirements
         </label>
@@ -172,16 +189,24 @@ const AddJob = ({addJobFunction}) => {
         />
         <label
           htmlFor="jobExtras"
-          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+          className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-7 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-7"
         >
           Extra data
         </label>
       </div>
-      <input
-        type="submit"
-        className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        value="Submit"
-      />
+      <div className="flex w-full justify-between">
+        <input
+          type="button"
+          className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          value="Clear"
+          onClick={() => reset()}
+        />
+        <input
+          type="submit"
+          className="cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          value="Submit"
+        />
+      </div>
       <Toaster />
     </form>
   );
