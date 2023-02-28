@@ -1,7 +1,10 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Link } from "wouter";
-import { axios_addData } from "../../helpers/requests";
+import { axios_addData, axios_getData } from "../../helpers/requests";
+import { UserInterface } from "../../interfaces/jobsInterfaces";
+import FormErrors from "../FormErrors/FormErrors";
+import { Toaster } from "react-hot-toast";
 
 const Form = () => {
   const [registerForm, setRegisterForm] = useState(false);
@@ -12,8 +15,10 @@ const Form = () => {
     formState: { errors },
   } = useForm();
 
-  const getLoginData = (data) => {
-    axios_addData(data, "http://localhost:3001/users")
+  const getLoginData = (data: UserInterface) => {
+    registerForm
+      ? axios_addData({ ...data, jobs: [] }, "http://localhost:3001/users")
+      : axios_getData( data, "http://localhost:3001/users")
   };
 
   const changeFormToRegister = () => {
@@ -32,26 +37,26 @@ const Form = () => {
         <div className="relative z-0 w-full mb-6 group">
           <input
             type="text"
-            {...register("loginEmail", {
+            {...register("email", {
               required: true,
               pattern:
                 /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/,
             })}
-            id="loginEmail"
+            id="email"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
           />
           <label
-            htmlFor="loginEmail"
+            htmlFor="email"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Email address
           </label>
           {
-            (errors.loginEmail?.type === "required" && (
+            (errors.email?.type === "required" && (
               <small className="text-red-500">Insert a mail</small>
             ),
-            errors.loginEmail?.type === "pattern" && (
+            errors.email?.type === "pattern" && (
               <small className="text-red-500">Insert a valid mail</small>
             ))
           }
@@ -59,20 +64,32 @@ const Form = () => {
         <div className="relative z-0 w-full mb-6 group">
           <input
             type="password"
-            {...register("loginPassword", { required: true })}
-            id="loginPassword"
+            {...register("password", {
+              required: true,
+              minLength: 8,
+              maxLength: 21,
+            })}
+            id="password"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
           />
           <label
-            htmlFor="loginPassword"
+            htmlFor="password"
             className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
           >
             Password
           </label>
-          {errors.loginPassword?.type === "required" && (
-            <small className="text-red-500">Insert a password</small>
-          )}
+          {
+            (errors.password?.type === "required" && (
+              <FormErrors errorMessage="Insert a password" />
+            ),
+            errors.password?.type === "minLength" && (
+              <FormErrors errorMessage="The password is too short. Minimum length of this field is 8 characters" />
+            ),
+            errors.password?.type === "maxLength" && (
+              <FormErrors errorMessage="The password is too long. Maximum length of this field is 21 characters" />
+            ))
+          }
         </div>
         <input
           value={registerForm ? "Register" : "Login"}
@@ -100,6 +117,7 @@ const Form = () => {
           )}
         </div>
       </div>
+      <Toaster/>
     </div>
   );
 };

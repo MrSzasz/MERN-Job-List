@@ -42,8 +42,6 @@ module.exports = {
 
     jobs_updateJobOnDatabase: (req, res) => {
         try {
-            // console.log(req.body)
-            // res.send(req.body)
             jobModel.findByIdAndUpdate(req.body._id,
                 req.body,
                 (err) => {

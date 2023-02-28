@@ -26,7 +26,7 @@ export interface JobInterface {
 }
 
 export interface UserInterface {
-  mail: string;
+  email: string;
   password: string;
   jobs: [] | JobInterface[];
 }

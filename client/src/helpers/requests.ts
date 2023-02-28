@@ -1,27 +1,33 @@
 import axios from "axios";
+import { toast } from "react-hot-toast";
 import { JobInterface, UserInterface } from "../interfaces/jobsInterfaces";
+
+const notify = (message: string) =>
+  toast.error(message, {
+    style: { backgroundColor: "#ef4444", color: "white" },
+  });
 
 /* ============================== JOBS ============================== */
 
 // Get all jobs from the database
 
-export const axios_getData = async (url: string) => {
-  try {
-    const { data } = await axios.get<JobInterface[]>(
-      url ? url : "http://localhost:3001/jobs"
-    );
+// export const axios_getData = async (url: string) => {
+//   try {
+//     const { data } = await axios.get<JobInterface[]>(
+//       url ? url : "http://localhost:3001/jobs"
+//     );
 
-    return data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("error message: ", error.message);
-      return error.message;
-    } else {
-      console.log("unexpected error: ", error);
-      return "An unexpected error occurred";
-    }
-  }
-};
+//     return data;
+//   } catch (error) {
+//     if (axios.isAxiosError(error)) {
+//       console.log("error message: ", error.message);
+//       return error.message;
+//     } else {
+//       console.log("unexpected error: ", error);
+//       return "An unexpected error occurred";
+//     }
+//   }
+// };
 
 // Edit job from the database
 
@@ -109,7 +115,7 @@ export const axios_addData = async (
   url: string
 ) => {
   try {
-    const { data } = await axios.post<JobInterface | UserInterface>(
+    const { data, status } = await axios.post<JobInterface | UserInterface>(
       url,
       dataFromForm,
       {
@@ -119,25 +125,43 @@ export const axios_addData = async (
         },
       }
     );
+    console.log({ status, data });
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.log("error message: ", err.message);
-      return err.message;
+      notify(err.response?.data.message);
+      return err;
     } else {
       console.log("unexpected error: ", err);
-      return "An unexpected error occurred";
+      notify("An unexpected error occurred, please try again later");
+      return "An unexpected error occurred, please try again later";
     }
   }
 };
 
 // Get user information from the database
 
-/*
+export const axios_getData = async (
+  dataFromUser: UserInterface,
+  url: string
+) => {
+  try {
+    const { data } = await axios.get<UserInterface>(url, {
+      params: { email: dataFromUser.email, password: dataFromUser.password },
+    });
 
-code
-
-*/
+    console.log(data);
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("error message: ", error.message);
+      return error.message;
+    } else {
+      console.log("unexpected error: ", error);
+      return "An unexpected error occurred";
+    }
+  }
+};
 
 // Edit user information
 
