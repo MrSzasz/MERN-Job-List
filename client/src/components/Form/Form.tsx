@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { Link } from "wouter";
-import { axios_addData, axios_getData } from "../../helpers/requests";
+import { axios_USERS_addData, axios_USERS_getData } from "../../helpers/requests";
 import { UserInterface } from "../../interfaces/jobsInterfaces";
 import FormErrors from "../FormErrors/FormErrors";
 import { Toaster } from "react-hot-toast";
@@ -17,8 +17,8 @@ const Form = () => {
 
   const getLoginData = (data: UserInterface) => {
     registerForm
-      ? axios_addData({ ...data, jobs: [] }, "http://localhost:3001/users")
-      : axios_getData( data, "http://localhost:3001/users")
+      ? axios_USERS_addData({ ...data, jobs: [] }, "http://localhost:3001/users")
+      : axios_USERS_getData( data, "http://localhost:3001/users")
   };
 
   const changeFormToRegister = () => {

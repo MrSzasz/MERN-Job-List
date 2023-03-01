@@ -24,6 +24,11 @@ require("dotenv").config()
 const mongoose = require('mongoose');
 
 
+// ===== MongoDB ============================================================ //
+
+const cookieParser = require('cookie-parser')
+
+
 // ===== Routes ============================================================ //
 
 const userRoutes = require("./routes/userRoutes")
@@ -57,6 +62,11 @@ mongoose.connect(process.env.MONGO_URI_AND_CONNECTION_KEY, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
+
+
+// ===== MongoDB ============================================================ //
+
+app.use(cookieParser())
 
 
 // =========================================================================== //

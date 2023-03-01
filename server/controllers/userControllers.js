@@ -1,5 +1,7 @@
 const bcrypt = require("bcrypt")
 const userModel = require("../models/user")
+const jwt = require("jsonwebtoken")
+const secretKeyForJWT = process.env.JWT_SECRET_KEY_FOR_ENCRYPT
 
 module.exports = {
 
@@ -14,6 +16,15 @@ module.exports = {
                         message: "The email is already in use"
                     })
                 }
+                const token = jwt.sign({
+                    id: userResult._id
+                }, secretKeyForJWT, {
+                    expiresIn: 60 * 60 * 24 * 30 // 30 days
+                })
+                res.status(200).cookie("testcookie", token).json({
+                    auth: true,
+                    token
+                });
             })
         } catch (err) {
             console.log(err)

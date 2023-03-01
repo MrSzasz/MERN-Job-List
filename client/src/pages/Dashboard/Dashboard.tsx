@@ -8,10 +8,10 @@ import { JobInterface } from "../../interfaces/jobsInterfaces";
 import { useState, useEffect } from "react";
 import Profile from "../../components/Profile/Profile";
 import {
-  axios_addData,
-  axios_deleteData,
-  axios_getData,
-  axios_updateData,
+  axios_JOBS_addData,
+  axios_JOBS_deleteData,
+  axios_JOBS_getData,
+  axios_JOBS_updateData,
 } from "../../helpers/requests";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -34,17 +34,17 @@ const Dashboard = () => {
   };
 
   const handleDeleteJob = async (jobID) => {
-    await axios_deleteData(jobID, "http://localhost:3001/jobs");
+    await axios_JOBS_deleteData(jobID, "http://localhost:3001/jobs");
     setJobsFromDB(jobsFromDB.filter((job) => job._id !== jobID));
   };
 
   const handleUpdateJob = (id, jobForUpdate) => {
     jobsFromDB[jobsFromDB.findIndex((job) => job._id === id)] = jobForUpdate;
-    axios_updateData(jobForUpdate, "http://localhost:3001/jobs");
+    axios_JOBS_updateData(jobForUpdate, "http://localhost:3001/jobs");
   };
 
   const getJobsFromDatabase = async () => {
-    const jobs = await axios_getData("http://localhost:3001/jobs");
+    const jobs = await axios_JOBS_getData("http://localhost:3001/jobs");
     setJobsFromDB(jobs);
   };
 
@@ -56,7 +56,7 @@ const Dashboard = () => {
     // jobsFromDB.push(data);
     try {
       const returnedData = await toast.promise(
-        axios_addData(
+        axios_JOBS_addData(
           { ...data, date: timeFormat.format(new Date()) },
           "http://localhost:3001/jobs"
         ),

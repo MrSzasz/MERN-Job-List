@@ -2,7 +2,7 @@
 // import { AiFillEdit, AiOutlineCheck } from "react-icons/ai";
 // import { BiLinkExternal } from "react-icons/bi";
 // import { HiOutlineTrash } from "react-icons/hi";
-// import { axios_updateData } from "../../helpers/requests";
+// import { axios_JOBS_updateData } from "../../helpers/requests";
 // import { JobInterface } from "../../interfaces/jobsInterfaces";
 
 // const JobDetails = ({ job, deleteJobFunction, functionModal }) => {
@@ -62,7 +62,7 @@
 //       // });
 
 //       // console.log(jobToUpdate);
-//       axios_updateData(jobToUpdate, "http://localhost:3001/jobs")
+//       axios_JOBS_updateData(jobToUpdate, "http://localhost:3001/jobs")
 //       setEditMode((current) => !current);
 //       setInvalidLink(false);
 //     } else {
@@ -232,7 +232,7 @@ import { useState } from "react";
 import { AiFillEdit, AiOutlineCheck } from "react-icons/ai";
 import { BiLinkExternal } from "react-icons/bi";
 import { HiOutlineTrash } from "react-icons/hi";
-import { axios_updateData } from "../../helpers/requests";
+import { axios_JOBS_updateData } from "../../helpers/requests";
 import { JobInterface } from "../../interfaces/jobsInterfaces";
 import DOMPurify from "dompurify";
 
