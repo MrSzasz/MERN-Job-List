@@ -14,6 +14,7 @@ import {
   axios_JOBS_updateData,
 } from "../../helpers/requests";
 import toast, { Toaster } from "react-hot-toast";
+import { useLocation } from "wouter";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState<Boolean>(false);
@@ -22,6 +23,10 @@ const Dashboard = () => {
   const [userTabOpened, setUserTabOpened] = useState(false);
   const [jobsFromDB, setJobsFromDB] = useState<Array<JobInterface>>([]);
   const [jobForDetails, setJobForDetails] = useState<JobInterface>({});
+
+  const [location, setLocation] = useLocation();
+
+  !JSON.parse(localStorage.getItem("auth")) && setLocation("/");
 
   const controlModal = (jobDetails?: boolean, id?) => {
     setOpenModal((current) => !current);
@@ -43,8 +48,16 @@ const Dashboard = () => {
     axios_JOBS_updateData(jobForUpdate, "http://localhost:3001/jobs");
   };
 
+  // Get jobs from the database
+
   const getJobsFromDatabase = async () => {
-    const jobs = await axios_JOBS_getData("http://localhost:3001/jobs");
+    const jobs = await axios_JOBS_getData(
+      "http://localhost:3001/jobs",
+      localStorage.getItem("token") // Get the token from the local storage
+    );
+
+    // Save the jobs in state
+
     setJobsFromDB(jobs);
   };
 

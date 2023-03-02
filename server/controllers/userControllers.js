@@ -10,25 +10,39 @@ module.exports = {
     users_createNewUser: (req, res) => {
         try {
             const user = new userModel(req.body)
-            user.save((err, userResult) => {
+            user.save((err, userResult) => { // Save the user and return error or user
                 if (err) {
-                    return res.status(500).json({
-                        message: "The email is already in use"
-                    })
+                    return res
+                        .status(500) // Status code 500 = internal server error
+                        .json({
+                            popUpMessage: "The email is already in use",
+                            dataError: err
+                        })
                 }
+
+                // Token creation 
+
                 const token = jwt.sign({
-                    id: userResult._id
-                }, secretKeyForJWT, {
-                    expiresIn: 60 * 60 * 24 * 30 // 30 days
+                    id: userResult._id // Data in token
+                }, secretKeyForJWT, { // Secret key for encryption
+                    expiresIn: 60 * 60 * 24 * 7 // Expires in 7 days
                 })
-                res.status(200).cookie("testcookie", token).json({
-                    auth: true,
-                    token
-                });
+
+                // Response to front end
+
+                res.status(201) // Status code 201 = created successfully 
+                    .json({
+                        auth: true, // Auth for store in local storage or cookie
+                        token // Token with info for storing in local storage or cookie
+                    });
             })
+
         } catch (err) {
             console.log(err)
-            res.status(409).send(err)
+            res.status(500).json({
+                popUpMessage: "Something went wrong, please try again later",
+                dataError: err
+            })
         }
     },
 
@@ -37,25 +51,58 @@ module.exports = {
 
     users_getUserFromDataBase: (req, res) => {
         try {
+
+            // Search for the user in the database
+
             userModel.findOne({
-                email: req.query.email
+                email: req.query.email // With the user's email address
             }, (err, user) => {
-                if (err) return res.status(400).send({
-                    message: err.message
+                // If the data is not found 
+
+                if (!user) return res.status(404).json({
+                    popUpMessage: "Invalid email or password",
+                    dataError: err
                 })
-                bcrypt.compare(req.query.password, user.password, function (error, isMatch) {
-                    if (error) {
-                        throw error
+
+                // Compare the password from the user and the password in the database
+
+                bcrypt.compare(req.query.password, user.password, function (err, isMatch) {
+                    if (err) {
+                        res.status(500).json({
+                            popUpMessage: "Error with password authentication",
+                            dataError: err
+                        })
+                        throw err
                     } else if (!isMatch) {
-                        res.status(500).send("Password doesn't match!")
+                        return res.status(500).json({
+                            popUpMessage: "Invalid email or password",
+                            dataError: err
+                        })
                     } else {
-                        res.status(200).send(user)
+                        // If the password is correct
+
+                        const token = jwt.sign({ // Generates a new token
+                            id: user.id
+                        }, secretKeyForJWT, {
+                            expiresIn: 60 * 60 * 24 * 7
+                        })
+
+                        // Send the token and authorization to the frontend
+
+                        res.status(200).json({
+                            auth: true,
+                            token
+                        })
                     }
                 })
             })
+
         } catch (err) {
             console.log(err)
-            res.status(409).send(err)
+            res.status(500).json({
+                popUpMessage: "Something went wrong, please try again later",
+                dataError: err
+            })
         }
     },
 

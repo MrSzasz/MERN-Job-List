@@ -1,13 +1,17 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Link } from "wouter";
-import { axios_USERS_addData, axios_USERS_getData } from "../../helpers/requests";
+import { Link, useLocation } from "wouter";
+import {
+  axios_USERS_addData,
+  axios_USERS_getData,
+} from "../../helpers/requests";
 import { UserInterface } from "../../interfaces/jobsInterfaces";
 import FormErrors from "../FormErrors/FormErrors";
 import { Toaster } from "react-hot-toast";
 
 const Form = () => {
   const [registerForm, setRegisterForm] = useState(false);
+  const [location, setLocation] = useLocation();
 
   const {
     register,
@@ -15,10 +19,32 @@ const Form = () => {
     formState: { errors },
   } = useForm();
 
-  const getLoginData = (data: UserInterface) => {
-    registerForm
-      ? axios_USERS_addData({ ...data, jobs: [] }, "http://localhost:3001/users")
-      : axios_USERS_getData( data, "http://localhost:3001/users")
+  const getLoginData = async (data: UserInterface) => {
+    // Get the data from the form
+
+    try {
+      if (registerForm) {
+        // Register a new user
+
+        await axios_USERS_addData(
+          { ...data, jobs: [] }, // Data to register
+          "http://localhost:3001/users" // Url for backend
+        );
+
+        // Redirect to dashboard
+
+        setLocation("/dashboard");
+      } else {
+        // User log in
+
+        await axios_USERS_getData(data, "http://localhost:3001/users");
+
+        // Redirect to dashboard
+        setLocation("/dashboard");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const changeFormToRegister = () => {
@@ -117,7 +143,7 @@ const Form = () => {
           )}
         </div>
       </div>
-      <Toaster/>
+      <Toaster />
     </div>
   );
 };

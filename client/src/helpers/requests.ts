@@ -7,17 +7,6 @@ const notify = (message: string) =>
     style: { backgroundColor: "#ef4444", color: "white" },
   });
 
-const setCookie = (
-  cookieName: string,
-  cookieValue: string,
-  expirationDays: number
-) => {
-  const d = new Date();
-  d.setTime(d.getTime() + expirationDays * 24 * 60 * 60 * 1000);
-  let expires = "expires=" + d.toUTCString();
-  document.cookie = `${cookieName}=${cookieValue};${expires};secure;httpOnly;sameSite=Lax;path=/`;
-};
-
 /* ============================== JOBS ============================== */
 
 // Get all jobs from the database
@@ -28,19 +17,29 @@ export const axios_JOBS_getData = async (
 ) => {
   try {
     const { data } = await axios.get<JobInterface[]>(url, {
+      // Send the token in the header of the request
+
       headers: {
-        "x-access-token": "aaaaaaaa",
+        "x-access-token": tokenFromUser,
       },
     });
 
+    // Returns the jobs
+
     return data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("error message: ", error.message);
-      return error.message;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      if (err.response?.data.popUpMessage !== "Token not provided") {
+        notify(err.response?.data.popUpMessage);
+        // Generate a new error for the handler in form
+        throw new Error(err.response?.data.popUpMessage);
+      }
+
+      throw new Error("Not authenticated");
     } else {
-      console.log("unexpected error: ", error);
-      return "An unexpected error occurred";
+      console.log("unexpected error: ", err);
+      notify("An unexpected error occurred, please try again later");
+      return "An unexpected error occurred, please try again later";
     }
   }
 };
@@ -127,37 +126,42 @@ export const axios_JOBS_addData = async (
 
 /* ============================== USERS ============================== */
 
-// Create a new user or job
+// Create a new user
 
 export const axios_USERS_addData = async (
-  dataFromForm: JobInterface | UserInterface,
+  dataFromForm: UserInterface,
   url: string
 ) => {
   try {
-    const { data, status } = await axios.post<JobInterface | UserInterface>(
-      url,
-      dataFromForm,
-      {
-        // withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
-    console.log({ status, data });
+    const { data } = await axios.post(url, dataFromForm, {
+      // Send the data to the backend
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    });
 
-    // setCookie("token", data.token, 7);
+    // Store the token from the response in the local storage
 
-    // document.cookie= `token=${data.token};secure;sameSite=Lax;httpOnly`
-    // document.cookie= `token=${data.token};secure;httpOnly;sameSite=Lax;path=/`
+    localStorage.setItem("token", data.token);
+
+    // Store the authorization in the local storage
+
+    localStorage.setItem("auth", data.auth);
+
+    // Returns the data to the frontend
 
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      notify(err.response?.data.message);
-      return err;
+      // Generate the popup
+      notify(err.response?.data.popUpMessage);
+
+      // Generate a new error for the handler in form
+      throw new Error(err.response?.data.popUpMessage);
     } else {
+      // If the error is not defined
+
       console.log("unexpected error: ", err);
       notify("An unexpected error occurred, please try again later");
       return "An unexpected error occurred, please try again later";
@@ -172,19 +176,34 @@ export const axios_USERS_getData = async (
   url: string
 ) => {
   try {
-    const { data } = await axios.get<UserInterface>(url, {
-      params: { email: dataFromUser.email, password: dataFromUser.password },
+    const { data } = await axios.get(url, {
+      params: { email: dataFromUser.email, password: dataFromUser.password }, // Send the data in the params
     });
 
-    console.log(data);
+    // Store the token from the response in the local storage
+
+    localStorage.setItem("token", data.token);
+
+    // Store the authorization in the local storage
+
+    localStorage.setItem("auth", data.auth);
+
+    // Returns the data to the frontend
+
     return data;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.log("error message: ", error.message);
-      return error.message;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      // Generate the popup
+      notify(err.response?.data.popUpMessage);
+
+      // Generate a new error for the handler in form
+      throw new Error(err.response?.data.popUpMessage);
     } else {
-      console.log("unexpected error: ", error);
-      return "An unexpected error occurred";
+      // If the error is not defined
+
+      console.log("unexpected error: ", err);
+      notify("An unexpected error occurred, please try again later");
+      return "An unexpected error occurred, please try again later";
     }
   }
 };

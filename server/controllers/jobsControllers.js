@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const jobModel = require("../models/jobs")
+const userModel = require("../models/user")
 const secretKeyForJWT = process.env.JWT_SECRET_KEY_FOR_ENCRYPT
 
 module.exports = {
@@ -32,58 +33,50 @@ module.exports = {
 
     jobs_getJobsFromDataBase: (req, res) => {
         try {
-            jobModel.find((err, jobs) => {
-                if (err) return res.status(404).json({
-                    message: "Error getting jobs from database"
-                })
+            const tokenFromUser = req.headers["x-access-token"] // Get the token from the header
 
-                const tokenFromUser = req.headers["x-access-token"]
 
-                if (!tokenFromUser) return res.status(404).json({
+            if (!tokenFromUser) {
+
+                // If there is no token
+
+                return res.status(401).json({ // Status code 401 = Not authorized
                     auth: false,
-                    message: "No token provided"
+                    token: null,
+                    popUpMessage: "Token not provided",
+                })
+            }
+
+            // Verify the token with JWT
+
+            jwt.verify(tokenFromUser, secretKeyForJWT, (err, data) => {
+                if (err) return res.status(401).json({ // Status code 401 = Not authorized
+                    message: "Invalid token"
                 })
 
-                // console.log(tokenFromUser);
+                // If the token is valid
 
-                try {
-                    const decodedToken = jwt.verify(tokenFromUser, secretKeyForJWT)
+                userModel.findById(
+                    data.id, (err, user) => {
 
-                    // Get jobs from DataBase 
+                        // If the user is not found
 
-                    jobModel.find((err, jobs) => {
                         if (err) return res.status(404).json({
-                            message: "Error getting jobs from DataBase"
+                            popUpMessage: "Error retrieving jobs from database",
+                            dataError: err
                         })
-                        res.status(200).cookies("test", "test").json({
-                            userId: decodedToken.id,
-                            auth: true,
-                            jobs
-                        })
+
+                        // If the user is found
+
+                        res.status(200).send(user.jobs)
                     })
-                } catch (err) {
-                    console.log(err.message);
-                    res.status(404).json({
-                        auth: false,
-                        error: err.message,
-                        message: "Invalid token"
-                    });
-                }
-
-                // console.log(verifiedToken);
-
-                // if (verifiedToken) {
-                //     return res.status(404).json({
-                //         auth: false,
-                //         message: "Error verifying token"
-                //     })
-                // }
-                // res.status(200).send(jobs)
             })
+
         } catch (err) {
             console.log(err)
-            res.status(404).json({
-                message: err.message
+            res.status(500).json({
+                popUpMessage: "Something went wrong, please try again later",
+                dataError: err
             })
         }
     },
