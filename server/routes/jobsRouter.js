@@ -24,11 +24,11 @@ router.get("/", validateToken, jobs_getJobsFromDataBase)
 
 // Update job in database
 
-router.put("/", jobs_updateJobOnDatabase)
+router.put("/", validateToken, jobs_updateJobOnDatabase)
 
 
 // Delete job in database
 
-router.delete("/", job_deleteJobOnDatabase)
+router.delete("/", validateToken, job_deleteJobOnDatabase)
 
 module.exports = router

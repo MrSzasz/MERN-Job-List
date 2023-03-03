@@ -24,6 +24,7 @@ const Dashboard = () => {
   const [userTabOpened, setUserTabOpened] = useState(false);
   const [jobsFromDB, setJobsFromDB] = useState<Array<JobInterface>>([]);
   const [jobForDetails, setJobForDetails] = useState<JobInterface>({});
+  const [profileInfo, setProfileInfo] = useState([])
 
   const [location, setLocation] = useLocation();
 
@@ -32,34 +33,51 @@ const Dashboard = () => {
   const controlModal = (jobDetails?: boolean, id?) => {
     setOpenModal((current) => !current);
     setJobDetailsModalComponent(jobDetails);
-    setJobForDetails(jobsFromDB.find((job) => job._id === id));
+    setJobForDetails(jobsFromDB.find((job) => job.id === id));
   };
 
   const controlUserTab = () => {
     setUserTabOpened((current) => !current);
   };
 
-  const handleDeleteJob = async (jobID) => {
-    await axios_JOBS_deleteData(jobID, "jobs");
-    setJobsFromDB(jobsFromDB.filter((job) => job._id !== jobID));
+  // Delete a job from the database and local array of jobs
+
+  const handleDeleteJob = async (jobID: string) => {
+    try {
+      await axios_JOBS_deleteData(jobID, "jobs"); // Delete job in the database
+
+      setJobsFromDB(jobsFromDB.filter((job) => job.id !== jobID)); // Delete jobs in the local array
+    } catch (err) {
+      toast.error("Error deleting job, please try again later"); // We catch the error and show the error message
+      console.log(err);
+    }
   };
 
   const handleUpdateJob = (id, jobForUpdate) => {
-    jobsFromDB[jobsFromDB.findIndex((job) => job._id === id)] = jobForUpdate;
-    axios_JOBS_updateData(jobForUpdate, "jobs");
+    try {
+      axios_JOBS_updateData(jobForUpdate, "jobs");
+      jobsFromDB[jobsFromDB.findIndex((job) => job.id === id)] = jobForUpdate;
+
+    } catch (err) {
+      toast.error("Error editing job, please try again later"); // We catch the error and show the error message
+      console.log(err);
+    }
   };
 
   // Get jobs from the database
 
   const getJobsFromDatabase = async () => {
-    const jobs = await axios_JOBS_getData(
+    const userData = await axios_JOBS_getData(
       "jobs",
       localStorage.getItem("token") // Get the token from the local storage
     );
 
     // Save the jobs in state
 
-    setJobsFromDB(jobs);
+    console.log(userData);
+    setJobsFromDB(userData.jobs);
+    setProfileInfo(userData)
+    
   };
 
   const timeFormat = new Intl.DateTimeFormat("en-us", {
@@ -68,23 +86,34 @@ const Dashboard = () => {
 
   const handleAddJob = async (data: JobInterface) => {
     try {
+      // Creates the new job
+
+      const dataToAdd = {
+        ...data, // Grab the data from the form
+        date: timeFormat.format(new Date()), // Add the date formatted with the function
+        id: uuidv4(), // Creates an unique id with uuid
+      };
+
+      // Add a toast to the response of the request
+
       await toast.promise(
         axios_JOBS_addData(
-          { ...data, date: timeFormat.format(new Date()), id: uuidv4() },
-          "jobs"
+          dataToAdd,
+          "jobs" // Path to the back end
         ),
         {
           loading: "Loading...",
           success: "Job added successfully",
-          error: "Error adding job, please try again later",
+          error: "Error adding job, please try again later", // Handle the error message for the popup
         },
         {
-          style: { backgroundColor: "#1F2937", color: "#FFFFFF" },
+          style: { backgroundColor: "#1F2937", color: "#FFFFFF" }, // And the styles
         }
       );
-      
-      jobsFromDB.push(data);
+
+      jobsFromDB.push(dataToAdd); // Add the job to the local job array
     } catch (err) {
+      toast.error("Error adding job, please try again later"); // We catch the error and show the error message
       console.log(err);
     }
   };
@@ -95,10 +124,10 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar controlUserTab={controlUserTab} />
+      <Navbar controlUserTab={controlUserTab} userEmail={profileInfo?.email} />
       <div className="relative">
         <div className="p-8 flex flex-wrap gap-4 w-full items-stretch">
-          {jobsFromDB.length !== 0 ? (
+          {jobsFromDB ? (
             jobsFromDB.map((job, i) => (
               <JobCard
                 key={i}
@@ -120,7 +149,7 @@ const Dashboard = () => {
         >
           <IoMdAdd color="white" />
         </button>
-        {userTabOpened && <Profile controlUserTab={controlUserTab} />}
+        {userTabOpened && <Profile userInfo={profileInfo} controlUserTab={controlUserTab} />}
       </div>
       {openModal && (
         <PopUpModal modalControls={controlModal}>

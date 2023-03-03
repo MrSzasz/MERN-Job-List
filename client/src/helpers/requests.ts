@@ -57,6 +57,7 @@ export const axios_JOBS_updateData = async (
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
       },
     });
     console.log(data);
@@ -72,7 +73,7 @@ export const axios_JOBS_updateData = async (
   }
 };
 
-// Delete job information from the database
+// Delete job from the database
 
 export const axios_JOBS_deleteData = async (
   idToDelete: string,
@@ -83,18 +84,26 @@ export const axios_JOBS_deleteData = async (
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
       },
-      data: { id: idToDelete },
+      data: { jobID: idToDelete }, // Send the id to delete
     });
-    console.log(data);
+
+    
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.log("error message: ", err.message);
-      return err.message;
+      if (err.response?.data.popUpMessage !== "Token not provided") {
+        notify(err.response?.data.popUpMessage);
+        // Generate a new error for the handler in form
+        throw new Error(err.response?.data.popUpMessage);
+      }
+
+      throw new Error("Not authenticated");
     } else {
       console.log("unexpected error: ", err);
-      return "An unexpected error occurred";
+      notify("An unexpected error occurred, please try again later");
+      return "An unexpected error occurred, please try again later";
     }
   }
 };
@@ -102,8 +111,8 @@ export const axios_JOBS_deleteData = async (
 // Post a new job
 
 export const axios_JOBS_addData = async (
-  dataFromForm: JobInterface | UserInterface,
-  path: string
+  dataFromForm: JobInterface, // Send the job info to the back end
+  path: string // And the path to the request
 ) => {
   try {
     const { data } = await axios.post<JobInterface>(
@@ -113,7 +122,7 @@ export const axios_JOBS_addData = async (
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          "x-access-token": localStorage.getItem("token"),
+          "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
         },
       }
     );
@@ -121,11 +130,17 @@ export const axios_JOBS_addData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.log("error message: ", err.message);
-      return err.message;
+      // Generate the popup
+      notify(err.response?.data.popUpMessage);
+
+      // Generate a new error for the handler in form
+      throw new Error(err.response?.data.popUpMessage);
     } else {
+      // If the error is not defined
+
       console.log("unexpected error: ", err);
-      return "An unexpected error occurred";
+      notify("An unexpected error occurred, please try again later");
+      return "An unexpected error occurred, please try again later";
     }
   }
 };

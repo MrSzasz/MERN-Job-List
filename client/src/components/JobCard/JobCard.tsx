@@ -61,7 +61,7 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
         <div className="flex w-full justify-between flex-wrap">
           <button
             onClick={() => {
-              functionModal(true, job._id);
+              functionModal(true, job.id);
             }}
             className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-blue-800 focus:ring-4 bg-blue-900 focus:ring-blue-800"
           >
@@ -69,8 +69,7 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
             <AiOutlineArrowRight />
           </button>
           <button
-            onClick={() => deleteJobFunction(job._id)}
-            // onClick={() => console.log(job._id)}
+            onClick={() => deleteJobFunction(job.id)}
             className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
           >
             Delete <HiOutlineTrash />

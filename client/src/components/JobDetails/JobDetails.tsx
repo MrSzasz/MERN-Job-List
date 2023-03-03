@@ -265,7 +265,7 @@ const JobDetails = ({
   const handleUpdate = () => {
     if (checkValidLink()) {
       const jobToUpdate: JobInterface = {
-        _id: job._id,
+        id: job.id,
         title: (document.querySelector("#editJobTitle") as HTMLInputElement)
           .textContent!,
         link: (document.querySelector("#editJobLink") as HTMLInputElement)
@@ -282,12 +282,12 @@ const JobDetails = ({
         ).innerText,
         date: job.date,
         extra:
-          (document.querySelector("#editJobExtra") as HTMLElement).innerText ||
+          (document.querySelector("#editJobExtra") as HTMLElement)?.innerText ||
           null,
       };
       setSelectedEditTitle(jobToUpdate.title);
       setSelectedEditLink(jobToUpdate.link);
-      updateJobFunction(job._id, jobToUpdate);
+      updateJobFunction(job.id, jobToUpdate);
       setEditMode((current) => !current);
       setInvalidLink(false);
     } else {
@@ -419,7 +419,7 @@ const JobDetails = ({
         />
         {job.extra && (
           <>
-            <h4 className="text-xl uppercase underline">Extras</h4>
+            <h4 className="text-xl uppercase underline">Ex2tras</h4>
             <p
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(job.extra),
@@ -451,7 +451,7 @@ const JobDetails = ({
         )}
         {!editMode && (
           <button
-            onClick={() => handleDeleteJobOnModal(job._id)}
+            onClick={() => handleDeleteJobOnModal(job.id)}
             className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
           >
             Delete <HiOutlineTrash />

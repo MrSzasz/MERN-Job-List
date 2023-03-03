@@ -23,7 +23,10 @@ module.exports = {
                 // Token creation 
 
                 const token = jwt.sign({
-                    id: userResult._id // Data in token
+                    id: userResult._id, // Data in token for the front end
+                    email: userResult.email,
+                    createdAt: userResult.createdAt,
+                    color: userResult.color
                 }, secretKeyForJWT, { // Secret key for encryption
                     expiresIn: 60 * 60 * 24 * 7 // Expires in 7 days
                 })

@@ -8,36 +8,41 @@ module.exports = {
 
     jobs_createNewJob: (req, res) => {
         try {
+
+            // Search for the user with the given token 
+
             userModel.findById(req.userData.id, (err, user) => {
+                // if the user is not found 
+
                 if (!user) return res.status(404).json({
                     popUpMessage: "User not found",
                     dataError: err
                 })
 
+                // Push the new job onto the user list
+
                 user.jobs.push(req.body)
 
-                user.save()
+                // And save the modified user
 
-                res.status(200).json({
+                user.save(err => {
+                    if (err) return res.status(500).json({
+                        popUpMessage: "Error saving job, please try again later",
+                        dataError: err
+                    })
+                })
+
+                // Return the success response and message
+
+                res.status(201).json({ // Status code 201 = created successfully
                     popUpMessage: "Job added successfully"
                 })
             })
-
-            // const job = new jobModel(req.body)
-            // job.save((err, result) => {
-            //     if (err) console.error(err)
-            //     res.send(result);
-            // })
-
-            /*
-            
-            res.cookie("token", tokenWithInfo) ==> Saves the token in the cookie
-            
-            */
         } catch (err) {
             console.log(err)
-            res.status(409).json({
-                message: err.message
+            res.status(500).json({
+                popUpMessage: "Something went wrong, please try again later",
+                dataError: err
             })
         }
     },
@@ -59,7 +64,7 @@ module.exports = {
 
                     // If the user is found
 
-                    res.status(200).send(user.jobs)
+                    res.status(200).send(user)
                 })
 
         } catch (err) {
@@ -75,16 +80,40 @@ module.exports = {
 
     jobs_updateJobOnDatabase: (req, res) => {
         try {
-            jobModel.findByIdAndUpdate(req.body._id,
-                req.body,
-                (err) => {
-                    if (err) console.error(err);
-                    res.send("job updated successfully!")
+            userModel.findById(
+                req.userData.id, (err, user) => { // req.userData = response from the middleware
+
+                    // If the user is not found
+
+                    if (err) return res.status(404).json({
+                        popUpMessage: "Error retrieving jobs from database",
+                        dataError: err
+                    })
+
+                    // If the user is found
+
+                    user.jobs[ // In the array
+                        user.jobs.findIndex((job) => job.id === req.body.id) // Find the job by id
+                    ] = req.body; // And replace it with the modified array 
+
+                    user.save(err => {
+                        if (err) return res.status(500).json({
+                            popUpMessage: "Error editing job, please try again later",
+                            dataError: err
+                        })
+                    })
+
+                    // Return the success response and message
+
+                    res.status(200).json({
+                        popUpMessage: "Job edited successfully"
+                    })
                 })
         } catch (err) {
             console.log(err)
-            res.status(409).json({
-                message: err.message
+            res.status(500).json({
+                popUpMessage: "Something went wrong, please try again later",
+                dataError: err
             })
         }
     },
@@ -93,16 +122,38 @@ module.exports = {
 
     job_deleteJobOnDatabase: (req, res) => {
         try {
-            jobModel.findByIdAndDelete(req.body.id, (err, data) => {
-                if (err) console.error(err);
-                res.status(201).json({
-                    status: "success"
+            userModel.findById(
+                req.userData.id, (err, user) => { // req.userData = response from the middleware
+
+                    // If the user is not found
+
+                    if (err) return res.status(404).json({
+                        popUpMessage: "Error retrieving jobs from database",
+                        dataError: err
+                    })
+
+                    // If the user is found
+
+                    user.jobs = user.jobs.filter((job) => job.id !== req.body.jobID)
+
+                    user.save(err => {
+                        if (err) return res.status(500).json({
+                            popUpMessage: "Error deleting job, please try again later",
+                            dataError: err
+                        })
+                    })
+
+                    // Return the success response and message
+
+                    res.status(200).json({
+                        popUpMessage: "Job deleted successfully"
+                    })
                 })
-            })
         } catch (err) {
             console.log(err)
-            res.status(409).json({
-                message: err.message
+            res.status(500).json({
+                popUpMessage: "Something went wrong, please try again later",
+                dataError: err
             })
         }
     },

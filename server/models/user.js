@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const bcrypt = require("bcryptjs")
 
+const timeFormat = new Intl.DateTimeFormat("en-us", {
+    dateStyle: "short",
+});
+
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -10,6 +14,10 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    createdAt: {
+        type: String,
+        default: timeFormat.format(new Date())
     },
     jobs: {
         type: Array,
