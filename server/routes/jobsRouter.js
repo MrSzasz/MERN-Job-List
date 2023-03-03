@@ -6,17 +6,20 @@ const {
 } = require('../controllers/jobsControllers');
 
 const express = require('express');
+const {
+    validateToken
+} = require('../middlewares/validateToken');
 const router = express.Router();
 
 
 // Create new job in database
 
-router.post("/", jobs_createNewJob)
+router.post("/", validateToken, jobs_createNewJob)
 
 
 // Get all jobs
 
-router.get("/", jobs_getJobsFromDataBase)
+router.get("/", validateToken, jobs_getJobsFromDataBase)
 
 
 // Update job in database

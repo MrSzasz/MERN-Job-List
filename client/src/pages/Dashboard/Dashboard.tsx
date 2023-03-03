@@ -15,6 +15,7 @@ import {
 } from "../../helpers/requests";
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation } from "wouter";
+import { v4 as uuidv4 } from "uuid";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState<Boolean>(false);
@@ -39,20 +40,20 @@ const Dashboard = () => {
   };
 
   const handleDeleteJob = async (jobID) => {
-    await axios_JOBS_deleteData(jobID, "http://localhost:3001/jobs");
+    await axios_JOBS_deleteData(jobID, "jobs");
     setJobsFromDB(jobsFromDB.filter((job) => job._id !== jobID));
   };
 
   const handleUpdateJob = (id, jobForUpdate) => {
     jobsFromDB[jobsFromDB.findIndex((job) => job._id === id)] = jobForUpdate;
-    axios_JOBS_updateData(jobForUpdate, "http://localhost:3001/jobs");
+    axios_JOBS_updateData(jobForUpdate, "jobs");
   };
 
   // Get jobs from the database
 
   const getJobsFromDatabase = async () => {
     const jobs = await axios_JOBS_getData(
-      "http://localhost:3001/jobs",
+      "jobs",
       localStorage.getItem("token") // Get the token from the local storage
     );
 
@@ -66,12 +67,11 @@ const Dashboard = () => {
   });
 
   const handleAddJob = async (data: JobInterface) => {
-    // jobsFromDB.push(data);
     try {
-      const returnedData = await toast.promise(
+      await toast.promise(
         axios_JOBS_addData(
-          { ...data, date: timeFormat.format(new Date()) },
-          "http://localhost:3001/jobs"
+          { ...data, date: timeFormat.format(new Date()), id: uuidv4() },
+          "jobs"
         ),
         {
           loading: "Loading...",
@@ -82,7 +82,8 @@ const Dashboard = () => {
           style: { backgroundColor: "#1F2937", color: "#FFFFFF" },
         }
       );
-      jobsFromDB.push(returnedData as JobInterface);
+      
+      jobsFromDB.push(data);
     } catch (err) {
       console.log(err);
     }
@@ -105,6 +106,7 @@ const Dashboard = () => {
                 functionModal={controlModal}
                 deleteJobFunction={handleDeleteJob}
               />
+              // <div>{console.log(job)}</div>
             ))
           ) : (
             <div className="h-full w-screen grid place-content-center">

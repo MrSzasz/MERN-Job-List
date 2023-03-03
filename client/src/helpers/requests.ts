@@ -7,16 +7,18 @@ const notify = (message: string) =>
     style: { backgroundColor: "#ef4444", color: "white" },
   });
 
+const serverBaseUrl = import.meta.env.VITE_SERVER_BASE_URL;
+
 /* ============================== JOBS ============================== */
 
 // Get all jobs from the database
 
 export const axios_JOBS_getData = async (
-  url: string,
+  path: string,
   tokenFromUser: string
 ) => {
   try {
-    const { data } = await axios.get<JobInterface[]>(url, {
+    const { data } = await axios.get<JobInterface[]>(serverBaseUrl + path, {
       // Send the token in the header of the request
 
       headers: {
@@ -48,10 +50,10 @@ export const axios_JOBS_getData = async (
 
 export const axios_JOBS_updateData = async (
   dataToUpdate: JobInterface,
-  url: string
+  path: string
 ) => {
   try {
-    const { data } = await axios.put(url, dataToUpdate, {
+    const { data } = await axios.put(serverBaseUrl + path, dataToUpdate, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -74,10 +76,10 @@ export const axios_JOBS_updateData = async (
 
 export const axios_JOBS_deleteData = async (
   idToDelete: string,
-  url: string
+  path: string
 ) => {
   try {
-    const { data } = await axios.delete(url, {
+    const { data } = await axios.delete(serverBaseUrl + path, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -101,17 +103,21 @@ export const axios_JOBS_deleteData = async (
 
 export const axios_JOBS_addData = async (
   dataFromForm: JobInterface | UserInterface,
-  url: string
+  path: string
 ) => {
   try {
-    const { data } = await axios.post<JobInterface>(url, dataFromForm, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
+    const { data } = await axios.post<JobInterface>(
+      serverBaseUrl + path,
+      dataFromForm,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "x-access-token": localStorage.getItem("token"),
+        },
+      }
+    );
 
-    // console.log(data);
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -130,10 +136,10 @@ export const axios_JOBS_addData = async (
 
 export const axios_USERS_addData = async (
   dataFromForm: UserInterface,
-  url: string
+  path: string
 ) => {
   try {
-    const { data } = await axios.post(url, dataFromForm, {
+    const { data } = await axios.post(serverBaseUrl + path, dataFromForm, {
       // Send the data to the backend
       headers: {
         "Content-Type": "application/json",
@@ -173,10 +179,10 @@ export const axios_USERS_addData = async (
 
 export const axios_USERS_getData = async (
   dataFromUser: UserInterface,
-  url: string
+  path: string
 ) => {
   try {
-    const { data } = await axios.get(url, {
+    const { data } = await axios.get(serverBaseUrl + path, {
       params: { email: dataFromUser.email, password: dataFromUser.password }, // Send the data in the params
     });
 
@@ -214,10 +220,10 @@ export const axios_USERS_getData = async (
 
 export const axios_USERS_updateData = async (
   dataToUpdate: JobInterface,
-  url: string
+  path: string
 ) => {
   try {
-    const { data } = await axios.put(url, dataToUpdate, {
+    const { data } = await axios.put(serverBaseUrl + path, dataToUpdate, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -242,9 +248,9 @@ export const axios_USERS_updateData = async (
 
 /*
 
-export const axios_USERS_deleteData = async (idToDelete: string, url: string) => {
+export const axios_USERS_deleteData = async (idToDelete: string, path: string) => {
   try {
-    const { data } = await axios.delete(url, {
+    const { data } = await axios.delete(serverBaseUrl + path, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",

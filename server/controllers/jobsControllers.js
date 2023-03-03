@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken')
 const jobModel = require("../models/jobs")
-const userModel = require("../models/user")
-const secretKeyForJWT = process.env.JWT_SECRET_KEY_FOR_ENCRYPT
+const userModel = require("../models/user");
+
 
 module.exports = {
 
@@ -9,11 +8,26 @@ module.exports = {
 
     jobs_createNewJob: (req, res) => {
         try {
-            const job = new jobModel(req.body)
-            job.save((err, result) => {
-                if (err) console.error(err)
-                res.send(result);
+            userModel.findById(req.userData.id, (err, user) => {
+                if (!user) return res.status(404).json({
+                    popUpMessage: "User not found",
+                    dataError: err
+                })
+
+                user.jobs.push(req.body)
+
+                user.save()
+
+                res.status(200).json({
+                    popUpMessage: "Job added successfully"
+                })
             })
+
+            // const job = new jobModel(req.body)
+            // job.save((err, result) => {
+            //     if (err) console.error(err)
+            //     res.send(result);
+            // })
 
             /*
             
@@ -33,44 +47,20 @@ module.exports = {
 
     jobs_getJobsFromDataBase: (req, res) => {
         try {
-            const tokenFromUser = req.headers["x-access-token"] // Get the token from the header
+            userModel.findById(
+                req.userData.id, (err, user) => { // req.userData = response from the middleware
 
+                    // If the user is not found
 
-            if (!tokenFromUser) {
-
-                // If there is no token
-
-                return res.status(401).json({ // Status code 401 = Not authorized
-                    auth: false,
-                    token: null,
-                    popUpMessage: "Token not provided",
-                })
-            }
-
-            // Verify the token with JWT
-
-            jwt.verify(tokenFromUser, secretKeyForJWT, (err, data) => {
-                if (err) return res.status(401).json({ // Status code 401 = Not authorized
-                    message: "Invalid token"
-                })
-
-                // If the token is valid
-
-                userModel.findById(
-                    data.id, (err, user) => {
-
-                        // If the user is not found
-
-                        if (err) return res.status(404).json({
-                            popUpMessage: "Error retrieving jobs from database",
-                            dataError: err
-                        })
-
-                        // If the user is found
-
-                        res.status(200).send(user.jobs)
+                    if (err) return res.status(404).json({
+                        popUpMessage: "Error retrieving jobs from database",
+                        dataError: err
                     })
-            })
+
+                    // If the user is found
+
+                    res.status(200).send(user.jobs)
+                })
 
         } catch (err) {
             console.log(err)

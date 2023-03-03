@@ -28,7 +28,7 @@ const Form = () => {
 
         await axios_USERS_addData(
           { ...data, jobs: [] }, // Data to register
-          "http://localhost:3001/users" // Url for backend
+          "users" // Path to the back end
         );
 
         // Redirect to dashboard
@@ -37,7 +37,7 @@ const Form = () => {
       } else {
         // User log in
 
-        await axios_USERS_getData(data, "http://localhost:3001/users");
+        await axios_USERS_getData(data, "users");
 
         // Redirect to dashboard
         setLocation("/dashboard");

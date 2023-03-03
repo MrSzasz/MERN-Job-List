@@ -44,7 +44,7 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
               alt="af"
             />
             <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white capitalize previewTitle">
-              {(job.title).toLowerCase()}
+              {job.title.toLowerCase()}
             </h5>
           </div>
           <small

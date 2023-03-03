@@ -14,7 +14,7 @@ export interface statusColorsVariants {
 }
 
 export interface JobInterface {
-  _id: string;
+  id: string;
   title: string;
   link: string;
   description: string;
