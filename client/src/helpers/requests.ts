@@ -89,7 +89,6 @@ export const axios_JOBS_deleteData = async (
       data: { jobID: idToDelete }, // Send the id to delete
     });
 
-    
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -261,14 +260,16 @@ export const axios_USERS_updateData = async (
 
 // Delete user from the database
 
-/*
-
-export const axios_USERS_deleteData = async (idToDelete: string, path: string) => {
+export const axios_USERS_deleteData = async (
+  idToDelete: string,
+  path: string
+) => {
   try {
     const { data } = await axios.delete(serverBaseUrl + path, {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
       },
       data: { id: idToDelete },
     });
@@ -284,5 +285,3 @@ export const axios_USERS_deleteData = async (idToDelete: string, path: string) =
     }
   }
 };
-
-*/

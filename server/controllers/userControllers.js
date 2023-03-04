@@ -119,7 +119,30 @@ module.exports = {
     // Delete a user on the database
 
     users_deleteOneUserOnDatabase: (req, res) => {
-        console.log(req.body)
-        res.send("hi, delete")
+        try {
+
+            // Search for the user in the database
+
+            userModel.findByIdAndDelete(req.body.id, (err) => {
+                // If the data is not found 
+
+                if (err) return res.status(500).json({
+                    popUpMessage: "Error trying to delete, please try again later",
+                    dataError: err
+                })
+
+                // Compare the password from the user and the password in the database
+
+                res.status(200)
+
+            })
+
+        } catch (err) {
+            console.log(err)
+            res.status(500).json({
+                popUpMessage: "Something went wrong, please try again later",
+                dataError: err
+            })
+        }
     },
 }
