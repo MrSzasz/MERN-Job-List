@@ -16,6 +16,8 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { useLocation } from "wouter";
 import { v4 as uuidv4 } from "uuid";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { AnimatePresence } from "framer-motion";
 
 const Dashboard = () => {
   const [openModal, setOpenModal] = useState<Boolean>(false);
@@ -24,11 +26,13 @@ const Dashboard = () => {
   const [userTabOpened, setUserTabOpened] = useState(false);
   const [jobsFromDB, setJobsFromDB] = useState<Array<JobInterface>>([]);
   const [jobForDetails, setJobForDetails] = useState<JobInterface>({});
-  const [profileInfo, setProfileInfo] = useState([])
+  const [profileInfo, setProfileInfo] = useState([]);
 
   const [location, setLocation] = useLocation();
 
   !JSON.parse(localStorage.getItem("auth")) && setLocation("/");
+
+  const [jobsContainer] = useAutoAnimate();
 
   const controlModal = (jobDetails?: boolean, id?) => {
     setOpenModal((current) => !current);
@@ -57,7 +61,6 @@ const Dashboard = () => {
     try {
       axios_JOBS_updateData(jobForUpdate, "jobs");
       jobsFromDB[jobsFromDB.findIndex((job) => job.id === id)] = jobForUpdate;
-
     } catch (err) {
       toast.error("Error editing job, please try again later"); // We catch the error and show the error message
       console.log(err);
@@ -76,8 +79,7 @@ const Dashboard = () => {
 
     console.log(userData);
     setJobsFromDB(userData.jobs);
-    setProfileInfo(userData)
-    
+    setProfileInfo(userData);
   };
 
   const timeFormat = new Intl.DateTimeFormat("en-us", {
@@ -126,7 +128,10 @@ const Dashboard = () => {
     <>
       <Navbar controlUserTab={controlUserTab} userEmail={profileInfo?.email} />
       <div className="relative">
-        <div className="p-8 flex flex-wrap gap-4 w-full items-stretch">
+        <div
+          className="p-8 flex flex-wrap gap-4 w-full items-stretch"
+          ref={jobsContainer}
+        >
           {jobsFromDB ? (
             jobsFromDB.map((job, i) => (
               <JobCard
@@ -149,22 +154,28 @@ const Dashboard = () => {
         >
           <IoMdAdd color="white" />
         </button>
-        {userTabOpened && <Profile userInfo={profileInfo} controlUserTab={controlUserTab} />}
-      </div>
-      {openModal && (
-        <PopUpModal modalControls={controlModal}>
-          {jobDetailsModalComponent ? (
-            <JobDetails
-              functionModal={controlModal}
-              job={jobForDetails}
-              deleteJobFunction={handleDeleteJob}
-              updateJobFunction={handleUpdateJob}
-            />
-          ) : (
-            <AddJob addJobFunction={handleAddJob} />
+        <AnimatePresence>
+          {userTabOpened && (
+            <Profile userInfo={profileInfo} controlUserTab={controlUserTab} />
           )}
-        </PopUpModal>
-      )}
+        </AnimatePresence>
+      </div>
+      <AnimatePresence>
+        {openModal ? (
+          <PopUpModal modalControls={controlModal}>
+            {jobDetailsModalComponent ? (
+              <JobDetails
+                functionModal={controlModal}
+                job={jobForDetails}
+                deleteJobFunction={handleDeleteJob}
+                updateJobFunction={handleUpdateJob}
+              />
+            ) : (
+              <AddJob addJobFunction={handleAddJob} />
+            )}
+          </PopUpModal>
+        ) : null}
+      </AnimatePresence>
     </>
   );
 };

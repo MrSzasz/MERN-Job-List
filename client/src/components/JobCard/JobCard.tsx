@@ -31,7 +31,7 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
 
   return (
     <div
-      className={`transition-all max-w-sm rounded-lg bg-gray-800 shadow-sm hover:shadow-2xl border-2 border-gray-800 basis-[100%] ${
+      className={`transition-all max-w-sm rounded-lg max-h-60 bg-gray-800 shadow-sm hover:shadow-2xl border-2 border-gray-800 basis-[100%] ${
         borderColorVariants[job.status]
       }`}
     >

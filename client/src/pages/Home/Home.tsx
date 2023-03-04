@@ -12,7 +12,8 @@ const Home = () => {
           <div className="absolute w-full h-full bg-black opacity-75 -z-10"></div>
           <h1 className="text-5xl">Job Vault</h1>
           <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ad, ipsum!
+            Welcome to Job Vault, the page that manages all of your job
+            applications.
           </p>
         </div>
       </div>

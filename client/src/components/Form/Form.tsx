@@ -17,6 +17,7 @@ const Form = () => {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
 
   const getLoginData = async (data: UserInterface) => {
@@ -49,6 +50,16 @@ const Form = () => {
 
   const changeFormToRegister = () => {
     setRegisterForm((current) => !current);
+  };
+
+  const ERRORS_TYPES_PASSWORD = {
+    required: <FormErrors errorMessage="Insert a password" />,
+    maxLength: (
+      <FormErrors errorMessage="The password is too long. Maximum length of this field is 21 characters" />
+    ),
+    minLength: (
+      <FormErrors errorMessage="The password is too short. Minimum length of this field is 8 characters" />
+    ),
   };
 
   return (
@@ -95,6 +106,7 @@ const Form = () => {
               minLength: 8,
               maxLength: 21,
             })}
+            minLength={8}
             id="password"
             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
@@ -105,18 +117,36 @@ const Form = () => {
           >
             Password
           </label>
-          {
-            (errors.password?.type === "required" && (
-              <FormErrors errorMessage="Insert a password" />
-            ),
-            errors.password?.type === "minLength" && (
-              <FormErrors errorMessage="The password is too short. Minimum length of this field is 8 characters" />
-            ),
-            errors.password?.type === "maxLength" && (
-              <FormErrors errorMessage="The password is too long. Maximum length of this field is 21 characters" />
-            ))
-          }
+          {ERRORS_TYPES_PASSWORD[errors.password?.type] || null}
         </div>
+        {registerForm && (
+          <div className="relative z-0 w-full mb-6 group">
+            <input
+              type="password"
+              {...register("repeatPassword", {
+                required: true,
+
+                validate: (val: string) => {
+                  if (watch("password") != val) {
+                    return false;
+                  }
+                },
+              })}
+              id="repeatPassword"
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+            />
+            <label
+              htmlFor="repeatPassword"
+              className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Confirm password
+            </label>
+            {errors.repeatPassword?.type === "validate" && (
+              <FormErrors errorMessage="The passwords don't match" />
+            )}
+          </div>
+        )}
         <input
           value={registerForm ? "Register" : "Login"}
           type="submit"
@@ -133,14 +163,14 @@ const Form = () => {
           >
             {registerForm ? "Cancel" : "Register"}
           </button>
-          {!registerForm && (
+          {/* {!registerForm && (
             <Link
               href="/dashboard"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
               Enter without account
             </Link>
-          )}
+          )} */}
         </div>
       </div>
       <Toaster />

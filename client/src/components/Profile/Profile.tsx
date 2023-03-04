@@ -8,6 +8,7 @@ import { useLocation } from "wouter";
 import { axios_USERS_deleteData } from "../../helpers/requests";
 import FormErrors from "../FormErrors/FormErrors";
 import PopUpModal from "../PopUpModal/PopUpModal";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Profile = ({ controlUserTab, userInfo }) => {
   const [deleteAccountModal, setDeleteAccountModal] = useState(false);
@@ -30,8 +31,8 @@ const Profile = ({ controlUserTab, userInfo }) => {
 
   const handleDeleteRequest = () => {
     try {
-      axios_USERS_deleteData(userInfo._id, "users")
-      handleLogOut()
+      axios_USERS_deleteData(userInfo._id, "users");
+      handleLogOut();
     } catch (err) {
       console.log(err);
       toast.error(
@@ -49,7 +50,24 @@ const Profile = ({ controlUserTab, userInfo }) => {
   };
 
   return (
-    <div className="w-screen h-screen md:w-fit md:right-0 top-0 bg-gray-900 fixed z-20">
+    <motion.div
+      initial={{ x: +200, opacity: 0 }}
+      animate={{
+        x: 0,
+        opacity: 1,
+        transition: {
+          ease: "linear",
+        },
+      }}
+      exit={{
+        x: +200,
+        opacity: 0,
+        transition: {
+          ease: "linear",
+        },
+      }}
+      className="w-screen h-screen md:w-fit md:right-0 md:border-gray-900 md:border-l-4 top-0 bg-gray-900 fixed z-20"
+    >
       <div
         className="absolute h-48 w-full"
         style={{ backgroundColor: userInfo.color }}
@@ -89,53 +107,58 @@ const Profile = ({ controlUserTab, userInfo }) => {
           Delete account
         </small>
       </div>
-      {deleteAccountModal && (
-        <PopUpModal modalControls={controlDeleteModal}>
-          <div className="flex flex-col">
-            <div>
-              <h3>Delete account</h3>
-              <p>
-                You'll lose all your saved jobs. Are you sure you want to delete
-                your account?
-              </p>
-            </div>
-            <div className="relative z-0 w-full mb-8 group mt-6">
-              <input
-                type="email"
-                {...register("confirmation", { required: true, maxLength: 50 })}
-                id="confirmation"
-                className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-                maxLength={50}
-              />
-              <label
-                htmlFor="confirmation"
-                className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-              >
-                Enter your email for confirmation
-              </label>
-            </div>
+      <AnimatePresence>
+        {deleteAccountModal ? (
+          <PopUpModal modalControls={controlDeleteModal}>
+            <div className="flex flex-col">
+              <div>
+                <h3>Delete account</h3>
+                <p>
+                  You'll lose all your saved jobs. Are you sure you want to
+                  delete your account?
+                </p>
+              </div>
+              <div className="relative z-0 w-full mb-8 group mt-6">
+                <input
+                  type="email"
+                  {...register("confirmation", {
+                    required: true,
+                    maxLength: 50,
+                  })}
+                  id="confirmation"
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                  maxLength={50}
+                />
+                <label
+                  htmlFor="confirmation"
+                  className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 z-[5] origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                >
+                  Enter your email for confirmation
+                </label>
+              </div>
 
-            <div className="flex gap-8">
-              <button
-                onClick={controlDeleteModal}
-                className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-blue-800 focus:ring-4 bg-blue-900 focus:ring-blue-800"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAccount}
-                disabled={watch("confirmation") !== userInfo.email}
-                className="disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-900 flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
-              >
-                Delete account
-              </button>
+              <div className="flex gap-8">
+                <button
+                  onClick={controlDeleteModal}
+                  className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-blue-800 focus:ring-4 bg-blue-900 focus:ring-blue-800"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={watch("confirmation") !== userInfo.email}
+                  className="disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-red-900 flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
+                >
+                  Delete account
+                </button>
+              </div>
             </div>
-          </div>
-        </PopUpModal>
-      )}
+          </PopUpModal>
+        ) : null}
+      </AnimatePresence>
       <Toaster />
-    </div>
+    </motion.div>
   );
 };
 
