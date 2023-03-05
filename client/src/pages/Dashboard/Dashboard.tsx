@@ -109,12 +109,12 @@ const Dashboard = () => {
 
   const getJobsFromDatabase = async () => {
     try {
-      const userData: UserDataInterface = await axios_JOBS_getData(
+      const userData : UserDataInterface = await axios_JOBS_getData(
         "jobs",
         localStorage.getItem("token")! // Get the token from the local storage
       );
 
-      setJobsFromDB(userData.jobs); // Save the jobs in state
+      setJobsFromDB(userData?.jobs); // Save the jobs in state
       setProfileInfo(userData); // Save the profile information
     } catch (err) {
       // Notify the error with the handler
@@ -179,7 +179,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar controlUserTab={controlUserTab} userEmail={profileInfo?.email} />
+      <Navbar controlUserTab={controlUserTab} userEmail={profileInfo?.email!} />
       <div className="relative">
         <div
           className="p-8 flex flex-wrap gap-4 w-full items-stretch"
@@ -208,7 +208,7 @@ const Dashboard = () => {
         </button>
         <AnimatePresence>
           {userTabOpened && (
-            <Profile userInfo={profileInfo} controlUserTab={controlUserTab} />
+            <Profile userInfo={profileInfo!} controlUserTab={controlUserTab} />
           )}
         </AnimatePresence>
       </div>
@@ -218,7 +218,7 @@ const Dashboard = () => {
             {jobDetailsModalComponent ? (
               <JobDetails
                 functionModal={controlModal}
-                job={jobForDetails}
+                job={jobForDetails!}
                 deleteJobFunction={handleDeleteJob}
                 updateJobFunction={handleUpdateJob}
               />

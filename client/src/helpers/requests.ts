@@ -39,7 +39,7 @@ export const axios_JOBS_getData = async (
   tokenFromUser: string
 ) => {
   try {
-    const { data } = await axios.get<JobInterface[]>(serverBaseUrl + path, {
+    const { data } = await axios.get(serverBaseUrl + path, {
       // Send the token in the header of the request
 
       headers: {

@@ -48,7 +48,7 @@ const Form = () => {
 
   // ========== Functions =========================================================== //
 
-  const getLoginData = async (data: UserInterface): Promise<void> => {
+  const getLoginData = async (data: any): Promise<void> => {
     // Get the data from the form
 
     try {

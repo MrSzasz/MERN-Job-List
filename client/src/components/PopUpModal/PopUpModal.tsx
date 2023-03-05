@@ -42,8 +42,6 @@ const PopUpModal = ({ children, modalControls }: PropsType_PopUpModal) => {
           transition: {
             duration: 0.5,
             type: "tween",
-            damping: 25,
-            stiffness: 500,
           },
         }}
         exit={{

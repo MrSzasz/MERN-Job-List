@@ -24,7 +24,7 @@ import FormErrors from "../FormErrors/FormErrors";
 // ========== Prop types ========================================================== //
 
 type PropsType_AddJob = {
-  addJobFunction: () => void;
+  addJobFunction: (data:JobInterface) => Promise<void>;
 };
 
 // ================================================================================ //

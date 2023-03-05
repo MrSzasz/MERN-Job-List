@@ -19,7 +19,7 @@ import FormErrors from "../FormErrors/FormErrors";
 
 // ========== Interfaces ========================================================== //
 
-import { JobInterface } from "../../interfaces/jobsInterfaces";
+import { JobInterface, statusVariants } from "../../interfaces/jobsInterfaces";
 
 // ========== Prop types ========================================================== //
 
@@ -86,7 +86,7 @@ const JobDetails = ({
           document.querySelector("#editJobDescription") as HTMLElement
         ).innerText!,
         status: (document.querySelector("#editJobStatus") as HTMLInputElement)
-          .value,
+          .value as statusVariants,
         company: (document.querySelector("#editJobCompany") as HTMLInputElement)
           .textContent!,
         requirements: (
@@ -179,7 +179,7 @@ const JobDetails = ({
           onChange={() =>
             setSelectedEditStatus(
               (document.getElementById("editJobStatus") as HTMLInputElement)
-                .value
+                .value as statusVariants
             )
           }
           className={`bg-gray-800 text-xs italic w-fit pb-3 pt-2 ${TEXT_COLORS_VARIANTS[selectedEditStatus]}`}
