@@ -1,13 +1,34 @@
+// ================================================================================ //
+// ================================ IMPORTS ======================================= //
+// ================================================================================ //
+
+// ========== Package components ================================================== //
+
 import axios from "axios";
 import { toast } from "react-hot-toast";
+
+// ========== Interfaces ========================================================== //
+
 import { JobInterface, UserInterface } from "../interfaces/jobsInterfaces";
+
+// ========== Custom components =================================================== //
+
+import { handleRequestErrors, handleUnexpectedRequestErrors } from "./errors";
+
+// ================================================================================ //
+// =================================== CODE ======================================= //
+// ================================================================================ //
+
+// ========== Variables =========================================================== //
+
+const serverBaseUrl = import.meta.env.VITE_SERVER_BASE_URL;
+
+// ========== Functions =========================================================== //
 
 const notify = (message: string) =>
   toast.error(message, {
     style: { backgroundColor: "#ef4444", color: "white" },
   });
-
-const serverBaseUrl = import.meta.env.VITE_SERVER_BASE_URL;
 
 /* ============================== JOBS ============================== */
 
@@ -31,17 +52,9 @@ export const axios_JOBS_getData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      if (err.response?.data.popUpMessage !== "Token not provided") {
-        notify(err.response?.data.popUpMessage);
-        // Generate a new error for the handler in form
-        throw new Error(err.response?.data.popUpMessage);
-      }
-
-      throw new Error("Not authenticated");
+      handleRequestErrors(err!);
     } else {
-      console.log("unexpected error: ", err);
-      notify("An unexpected error occurred, please try again later");
-      return "An unexpected error occurred, please try again later";
+      handleUnexpectedRequestErrors(err!);
     }
   }
 };
@@ -64,11 +77,9 @@ export const axios_JOBS_updateData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.log("error message: ", err.message);
-      return err.message;
+      handleRequestErrors(err!);
     } else {
-      console.log("unexpected error: ", err);
-      return "An unexpected error occurred";
+      handleUnexpectedRequestErrors(err!);
     }
   }
 };
@@ -92,17 +103,9 @@ export const axios_JOBS_deleteData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      if (err.response?.data.popUpMessage !== "Token not provided") {
-        notify(err.response?.data.popUpMessage);
-        // Generate a new error for the handler in form
-        throw new Error(err.response?.data.popUpMessage);
-      }
-
-      throw new Error("Not authenticated");
+      handleRequestErrors(err!);
     } else {
-      console.log("unexpected error: ", err);
-      notify("An unexpected error occurred, please try again later");
-      return "An unexpected error occurred, please try again later";
+      handleUnexpectedRequestErrors(err!);
     }
   }
 };
@@ -129,17 +132,11 @@ export const axios_JOBS_addData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      // Generate the popup
-      notify(err.response?.data.popUpMessage);
-
-      // Generate a new error for the handler in form
-      throw new Error(err.response?.data.popUpMessage);
+      handleRequestErrors(err!);
     } else {
       // If the error is not defined
 
-      console.log("unexpected error: ", err);
-      notify("An unexpected error occurred, please try again later");
-      return "An unexpected error occurred, please try again later";
+      handleUnexpectedRequestErrors(err!);
     }
   }
 };
@@ -174,17 +171,11 @@ export const axios_USERS_addData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      // Generate the popup
-      notify(err.response?.data.popUpMessage);
-
-      // Generate a new error for the handler in form
-      throw new Error(err.response?.data.popUpMessage);
+      handleRequestErrors(err!);
     } else {
       // If the error is not defined
 
-      console.log("unexpected error: ", err);
-      notify("An unexpected error occurred, please try again later");
-      return "An unexpected error occurred, please try again later";
+      handleUnexpectedRequestErrors(err!);
     }
   }
 };
@@ -213,50 +204,14 @@ export const axios_USERS_getData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      // Generate the popup
-      notify(err.response?.data.popUpMessage);
-
-      // Generate a new error for the handler in form
-      throw new Error(err.response?.data.popUpMessage);
+      handleRequestErrors(err!);
     } else {
       // If the error is not defined
 
-      console.log("unexpected error: ", err);
-      notify("An unexpected error occurred, please try again later");
-      return "An unexpected error occurred, please try again later";
+      handleUnexpectedRequestErrors(err!);
     }
   }
 };
-
-// Edit user information
-
-/*
-
-export const axios_USERS_updateData = async (
-  dataToUpdate: JobInterface,
-  path: string
-) => {
-  try {
-    const { data } = await axios.put(serverBaseUrl + path, dataToUpdate, {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    });
-    console.log(data);
-    return data;
-  } catch (err) {
-    if (axios.isAxiosError(err)) {
-      console.log("error message: ", err.message);
-      return err.message;
-    } else {
-      console.log("unexpected error: ", err);
-      return "An unexpected error occurred";
-    }
-  }
-};
-
-*/
 
 // Delete user from the database
 
@@ -277,11 +232,9 @@ export const axios_USERS_deleteData = async (
     return data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.log("error message: ", err.message);
-      return err.message;
+      handleRequestErrors(err!);
     } else {
-      console.log("unexpected error: ", err);
-      return "An unexpected error occurred";
+      handleUnexpectedRequestErrors(err!);
     }
   }
 };

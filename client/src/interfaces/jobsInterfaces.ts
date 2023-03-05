@@ -30,3 +30,13 @@ export interface UserInterface {
   password: string;
   jobs: [] | JobInterface[];
 }
+
+export interface UserDataInterface {
+  __v: number;
+  _id: string;
+  color: string;
+  createdAt: string;
+  email: string;
+  jobs: JobInterface[];
+  password: string;
+}

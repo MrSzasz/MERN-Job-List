@@ -1,18 +1,44 @@
-import { useForm } from "react-hook-form";
+// ================================================================================ //
+// ================================ IMPORTS ======================================= //
+// ================================================================================ //
+
+// ========== Main imports ======================================================== //
+
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+
+// ========== Package components ================================================== //
+
+import { useLocation } from "wouter";
+import { useForm } from "react-hook-form";
+import { Toaster } from "react-hot-toast";
+import { FiLogOut } from "react-icons/fi";
+import { MdOutlineClose } from "react-icons/md";
+
+// ========== Custom components =================================================== //
+
+import FormErrors from "../FormErrors/FormErrors";
+
+// ========== Interfaces ========================================================== //
+
+import { UserInterface } from "../../interfaces/jobsInterfaces";
+
+// ========== Helpers ============================================================= //
+
 import {
   axios_USERS_addData,
   axios_USERS_getData,
 } from "../../helpers/requests";
-import { UserInterface } from "../../interfaces/jobsInterfaces";
-import FormErrors from "../FormErrors/FormErrors";
-import { Toaster } from "react-hot-toast";
+import { notifyErrorWithToast } from "../../helpers/errors";
+
+// ================================================================================ //
+// ================================= COMPONENT ==================================== //
+// ================================================================================ //
 
 const Form = () => {
+  // ========== Hooks =============================================================== //
+
   const [registerForm, setRegisterForm] = useState(false);
   const [location, setLocation] = useLocation();
-
   const {
     register,
     handleSubmit,
@@ -20,7 +46,9 @@ const Form = () => {
     watch,
   } = useForm();
 
-  const getLoginData = async (data: UserInterface) => {
+  // ========== Functions =========================================================== //
+
+  const getLoginData = async (data: UserInterface): Promise<void> => {
     // Get the data from the form
 
     try {
@@ -44,13 +72,18 @@ const Form = () => {
         setLocation("/dashboard");
       }
     } catch (err) {
-      console.error(err);
+      notifyErrorWithToast(
+        "Something went wrong, please try again later",
+        err!
+      );
     }
   };
 
   const changeFormToRegister = () => {
-    setRegisterForm((current) => !current);
+    setRegisterForm((current) => !current); // Set the form to register or login
   };
+
+  // ========== Variables =========================================================== //
 
   const ERRORS_TYPES_PASSWORD = {
     required: <FormErrors errorMessage="Insert a password" />,
@@ -62,6 +95,7 @@ const Form = () => {
     ),
   };
 
+  // ========== Return ============================================================== //
   return (
     <div className="h-full flex flex-col p-8">
       <form
@@ -91,10 +125,10 @@ const Form = () => {
           </label>
           {
             (errors.email?.type === "required" && (
-              <small className="text-red-500">Insert a mail</small>
+              <FormErrors errorMessage="Insert a mail" />
             ),
             errors.email?.type === "pattern" && (
-              <small className="text-red-500">Insert a valid mail</small>
+              <FormErrors errorMessage="The password is too long. Maximum length of this field is 21 characters" />
             ))
           }
         </div>
@@ -117,7 +151,9 @@ const Form = () => {
           >
             Password
           </label>
-          {ERRORS_TYPES_PASSWORD[errors.password?.type] || null}
+          {ERRORS_TYPES_PASSWORD[
+            errors.password?.type as keyof typeof ERRORS_TYPES_PASSWORD
+          ] || null}
         </div>
         {registerForm && (
           <div className="relative z-0 w-full mb-6 group">
@@ -147,11 +183,14 @@ const Form = () => {
             )}
           </div>
         )}
-        <input
-          value={registerForm ? "Register" : "Login"}
-          type="submit"
-          className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        />
+        <div className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex justify-center items-center gap-4">
+          <input
+            value={registerForm ? "Register" : "Login"}
+            type="submit"
+            className="cursor-pointer"
+          />
+          <FiLogOut />
+        </div>
       </form>
       <div className="flex flex-col items-center gap-4">
         {!registerForm && <h2>No account?</h2>}
@@ -159,9 +198,10 @@ const Form = () => {
           <button
             onClick={changeFormToRegister}
             type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex items-center justify-center gap-3"
           >
             {registerForm ? "Cancel" : "Register"}
+            {registerForm ? <MdOutlineClose /> : <FiLogOut />}
           </button>
           {/* {!registerForm && (
             <Link

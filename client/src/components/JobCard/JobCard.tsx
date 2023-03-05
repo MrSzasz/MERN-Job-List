@@ -1,19 +1,45 @@
-import "./JobCard.css";
+// ================================================================================ //
+// ================================ IMPORTS ======================================= //
+// ================================================================================ //
+
+// ========== Package components ================================================== //
+
 import { AiOutlineArrowRight } from "react-icons/ai";
 import { HiOutlineTrash } from "react-icons/hi";
+
+// ========== Interfaces ========================================================== //
+
 import {
   statusColorsVariants,
   JobInterface,
 } from "../../interfaces/jobsInterfaces";
 
-interface JobCard__Props {
+// ========== Prop types ========================================================== //
+
+type PropsType_JobCard = {
   job: JobInterface;
   functionModal: (arg0: boolean, arg1: string) => void;
   deleteJobFunction: (jobId: string) => void;
-}
+};
 
-const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
-  const textColorVariants: statusColorsVariants = {
+// ========== Styles ============================================================== //
+
+import "./JobCard.css";
+
+// ========== Helpers ============================================================= //
+
+// ================================================================================ //
+// ================================= COMPONENT ==================================== //
+// ================================================================================ //
+
+const JobCard = ({
+  job,
+  functionModal,
+  deleteJobFunction,
+}: PropsType_JobCard) => {
+  // ========== Variables =========================================================== //
+
+  const TEXT_COLORS_VARIANTS: statusColorsVariants = {
     success: "success-text-style",
     rejected: "rejected-text-style",
     processing: "processing-text-style",
@@ -21,7 +47,7 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
     later: "later-text-style",
   };
 
-  const borderColorVariants: statusColorsVariants = {
+  const BORDER_COLORS_VARIANTS: statusColorsVariants = {
     success: "hover:border-success",
     rejected: "hover:border-rejected",
     processing: "hover:border-processing",
@@ -30,9 +56,11 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
   };
 
   return (
+    // ========== Return ============================================================== //
+
     <div
       className={`transition-all max-w-sm rounded-lg max-h-60 bg-gray-800 shadow-sm hover:shadow-2xl border-2 border-gray-800 basis-[100%] ${
-        borderColorVariants[job.status]
+        BORDER_COLORS_VARIANTS[job.status]
       }`}
     >
       <div className="p-5 h-full flex flex-col justify-between">
@@ -49,7 +77,7 @@ const JobCard = ({ job, functionModal, deleteJobFunction }: JobCard__Props) => {
           </div>
           <small
             className={`${
-              textColorVariants[job.status as keyof statusColorsVariants]
+              TEXT_COLORS_VARIANTS[job.status as keyof statusColorsVariants]
             } pb-3`}
           >
             {job.status}

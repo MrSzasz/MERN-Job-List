@@ -1,44 +1,78 @@
+// ================================================================================ //
+// ================================ IMPORTS ======================================= //
+// ================================================================================ //
+
+// ========== Main imports ======================================================== //
+
+import { useState, useEffect } from "react";
+
+// ========== Package components ================================================== //
+
+import { useLocation } from "wouter";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { v4 as uuidv4 } from "uuid";
+import toast, { Toaster } from "react-hot-toast";
+import { AnimatePresence } from "framer-motion";
 import { IoMdAdd } from "react-icons/io";
-import JobCard from "../../components/JobCard/JobCard";
+
+// ========== Custom components =================================================== //
+
 import Navbar from "../../components/Navbar/Navbar";
-import PopUpModal from "../../components/PopUpModal/PopUpModal";
+import Profile from "../../components/Profile/Profile";
+import JobCard from "../../components/JobCard/JobCard";
 import AddJob from "../../components/AddJob/AddJob";
 import JobDetails from "../../components/JobDetails/JobDetails";
-import { JobInterface } from "../../interfaces/jobsInterfaces";
-import { useState, useEffect } from "react";
-import Profile from "../../components/Profile/Profile";
+import PopUpModal from "../../components/PopUpModal/PopUpModal";
+
+// ========== Interfaces ========================================================== //
+
+import {
+  JobInterface,
+  UserDataInterface,
+} from "../../interfaces/jobsInterfaces";
+
+// ========== Helpers ============================================================= //
+
 import {
   axios_JOBS_addData,
   axios_JOBS_deleteData,
   axios_JOBS_getData,
   axios_JOBS_updateData,
 } from "../../helpers/requests";
-import toast, { Toaster } from "react-hot-toast";
-import { useLocation } from "wouter";
-import { v4 as uuidv4 } from "uuid";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { AnimatePresence } from "framer-motion";
+import { notifyErrorWithToast } from "../../helpers/errors";
+
+// ================================================================================ //
+// ================================= COMPONENT ==================================== //
+// ================================================================================ //
 
 const Dashboard = () => {
+  // ========== Hooks ============================================================== //
+
   const [openModal, setOpenModal] = useState<Boolean>(false);
   const [jobDetailsModalComponent, setJobDetailsModalComponent] =
-    useState(true);
-  const [userTabOpened, setUserTabOpened] = useState(false);
+    useState<Boolean>(true);
+  const [userTabOpened, setUserTabOpened] = useState<Boolean>(false);
   const [jobsFromDB, setJobsFromDB] = useState<Array<JobInterface>>([]);
-  const [jobForDetails, setJobForDetails] = useState<JobInterface>({});
-  const [profileInfo, setProfileInfo] = useState([]);
-
+  const [jobForDetails, setJobForDetails] = useState<JobInterface>();
+  const [profileInfo, setProfileInfo] = useState<UserDataInterface>();
   const [location, setLocation] = useLocation();
-
-  !JSON.parse(localStorage.getItem("auth")) && setLocation("/");
-
   const [jobsContainer] = useAutoAnimate();
 
-  const controlModal = (jobDetails?: boolean, id?) => {
-    setOpenModal((current) => !current);
-    setJobDetailsModalComponent(jobDetails);
-    setJobForDetails(jobsFromDB.find((job) => job.id === id));
+  // ========== Functions ============================================================== //
+
+  // Get the auth item from the local storage or redirect to the main login page
+
+  !JSON.parse(localStorage.getItem("auth")!) && setLocation("/");
+
+  // Controls the modal window
+
+  const controlModal = (jobDetails?: boolean, id?: string) => {
+    setOpenModal((current) => !current); // Toggle the boolean value
+    setJobDetailsModalComponent(jobDetails as boolean); // Set the status of the modal for details
+    setJobForDetails(jobsFromDB.find((job) => job.id === id)); // Set the job for details
   };
+
+  // Controls the profile tab
 
   const controlUserTab = () => {
     setUserTabOpened((current) => !current);
@@ -52,41 +86,55 @@ const Dashboard = () => {
 
       setJobsFromDB(jobsFromDB.filter((job) => job.id !== jobID)); // Delete jobs in the local array
     } catch (err) {
-      toast.error("Error deleting job, please try again later"); // We catch the error and show the error message
-      console.log(err);
+      // Notify the error with the handler
+
+      notifyErrorWithToast("Error deleting job, please try again later", err!);
     }
   };
 
-  const handleUpdateJob = (id, jobForUpdate) => {
+  // Update a job from the database and the local array of jobs
+
+  const handleUpdateJob = (id: string, jobForUpdate: JobInterface) => {
     try {
-      axios_JOBS_updateData(jobForUpdate, "jobs");
-      jobsFromDB[jobsFromDB.findIndex((job) => job.id === id)] = jobForUpdate;
+      axios_JOBS_updateData(jobForUpdate, "jobs"); // Update the job data
+      jobsFromDB[jobsFromDB.findIndex((job) => job.id === id)] = jobForUpdate; // Update the job in the local array of jobs
     } catch (err) {
-      toast.error("Error editing job, please try again later"); // We catch the error and show the error message
-      console.log(err);
+      // Notify the error with the handler
+
+      notifyErrorWithToast("Error editing job, please try again later", err!);
     }
   };
 
-  // Get jobs from the database
+  // Get jobs from the database and save them to the local array of jobs
 
   const getJobsFromDatabase = async () => {
-    const userData = await axios_JOBS_getData(
-      "jobs",
-      localStorage.getItem("token") // Get the token from the local storage
-    );
+    try {
+      const userData: UserDataInterface = await axios_JOBS_getData(
+        "jobs",
+        localStorage.getItem("token")! // Get the token from the local storage
+      );
 
-    // Save the jobs in state
+      setJobsFromDB(userData.jobs); // Save the jobs in state
+      setProfileInfo(userData); // Save the profile information
+    } catch (err) {
+      // Notify the error with the handler
 
-    console.log(userData);
-    setJobsFromDB(userData.jobs);
-    setProfileInfo(userData);
+      notifyErrorWithToast(
+        "Error getting jobs from database, please try again later",
+        err!
+      );
+    }
   };
 
-  const timeFormat = new Intl.DateTimeFormat("en-us", {
-    dateStyle: "short",
-  });
+  // Creates and saves jobs on the database and local array of jobs
 
   const handleAddJob = async (data: JobInterface) => {
+    // Format the time with INTL
+
+    const timeFormat = new Intl.DateTimeFormat("en-us", {
+      dateStyle: "short",
+    });
+
     try {
       // Creates the new job
 
@@ -115,14 +163,19 @@ const Dashboard = () => {
 
       jobsFromDB.push(dataToAdd); // Add the job to the local job array
     } catch (err) {
-      toast.error("Error adding job, please try again later"); // We catch the error and show the error message
-      console.log(err);
+      // Notify the error with the handler
+
+      notifyErrorWithToast("Error adding job, please try again later", err!);
     }
   };
+
+  // ========== useEffects ============================================================== //
 
   useEffect(() => {
     getJobsFromDatabase();
   }, []);
+
+  // ========== Return ============================================================== //
 
   return (
     <>
@@ -140,7 +193,6 @@ const Dashboard = () => {
                 functionModal={controlModal}
                 deleteJobFunction={handleDeleteJob}
               />
-              // <div>{console.log(job)}</div>
             ))
           ) : (
             <div className="h-full w-screen grid place-content-center">
@@ -176,6 +228,7 @@ const Dashboard = () => {
           </PopUpModal>
         ) : null}
       </AnimatePresence>
+      <Toaster />
     </>
   );
 };

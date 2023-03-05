@@ -1,10 +1,26 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import "./index.css"
+// =========================================================================== //
+// ================================= IMPORTS ================================= //
+// =========================================================================== //
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+// ========== Main imports =================================================== //
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+
+// ========== Custom components =================================================== //
+
+import App from "./App";
+
+// ========== Styles =================================================== //
+
+import "./index.css";
+
+// =========================================================================== //
+// =============================== COMPONENT ================================= //
+// =========================================================================== //
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

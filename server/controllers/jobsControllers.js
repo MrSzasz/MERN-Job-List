@@ -1,4 +1,3 @@
-const jobModel = require("../models/jobs")
 const userModel = require("../models/user");
 
 

@@ -1,14 +1,40 @@
+// ================================================================================ //
+// ================================ IMPORTS ======================================= //
+// ================================================================================ //
+
+// ========== Main imports ======================================================== //
+
+import { useState } from "react";
+
+// ========== Package components ================================================== //
+
 import { useForm } from "react-hook-form";
+import { Toaster } from "react-hot-toast";
+import { HiOutlineTrash } from "react-icons/hi";
+import { AiOutlineSend } from "react-icons/ai";
+
+// ========== Interfaces ========================================================== //
+
 import {
   JobInterface,
   statusColorsVariants,
 } from "../../interfaces/jobsInterfaces";
-import { Toaster } from "react-hot-toast";
-import { useState } from "react";
+import FormErrors from "../FormErrors/FormErrors";
 
-const AddJob = ({ addJobFunction }) => {
-  const [selectedStatus, setSelectedStatus] = useState("later");
+// ========== Prop types ========================================================== //
 
+type PropsType_AddJob = {
+  addJobFunction: () => void;
+};
+
+// ================================================================================ //
+// ================================= COMPONENT ==================================== //
+// ================================================================================ //
+
+const AddJob = ({ addJobFunction }: PropsType_AddJob) => {
+  // ========== Hooks =============================================================== //
+
+  const [selectedStatus, setSelectedStatus] = useState<string>("later");
   const {
     register,
     formState: { errors },
@@ -16,7 +42,9 @@ const AddJob = ({ addJobFunction }) => {
     reset,
   } = useForm<JobInterface>();
 
-  const textColorVariants: statusColorsVariants = {
+  // ========== Variables =========================================================== //
+
+  const TEXT_COLORS_VARIANTS: statusColorsVariants = {
     success: "success-text-style",
     rejected: "rejected-text-style",
     processing: "processing-text-style",
@@ -25,6 +53,8 @@ const AddJob = ({ addJobFunction }) => {
   };
 
   return (
+    // ========== Return ============================================================== //
+
     <form
       onSubmit={handleSubmit(addJobFunction)}
       className="grid items-center h-full px-8 max-w-lg"
@@ -49,10 +79,10 @@ const AddJob = ({ addJobFunction }) => {
         </label>
         {
           (errors.title?.type === "required" && (
-            <small className="text-red-500">Insert a title for the job</small>
+            <FormErrors errorMessage="Insert a title for the job" />
           ),
           errors.title?.type === "maxLength" && (
-            <small className="text-red-500">The title is too long</small>
+            <FormErrors errorMessage="The title is too long" />
           ))
         }
       </div>
@@ -76,10 +106,10 @@ const AddJob = ({ addJobFunction }) => {
         </label>
         {
           (errors.link?.type === "required" && (
-            <small className="text-red-500">Insert a link of the job</small>
+            <FormErrors errorMessage="Insert a link of the job" />
           ),
           errors.link?.type === "pattern" && (
-            <small className="text-red-500">Insert a valid link</small>
+            <FormErrors errorMessage="Insert a valid link" />
           ))
         }
       </div>
@@ -98,9 +128,7 @@ const AddJob = ({ addJobFunction }) => {
           Description
         </label>
         {errors.description?.type === "required" && (
-          <small className="text-red-500">
-            Insert a description for the job
-          </small>
+          <FormErrors errorMessage="Insert a description for the job" />
         )}
       </div>
       <div className="grid md:grid-cols-2 md:gap-6">
@@ -109,9 +137,15 @@ const AddJob = ({ addJobFunction }) => {
             {...register("status", { required: true })}
             id="jobStatus"
             onChange={() =>
-              setSelectedStatus(document.getElementById("jobStatus")?.value)
+              setSelectedStatus(
+                (document.getElementById("jobStatus") as HTMLInputElement).value
+              )
             }
-            className={`block py-2.5 px-0 w-full text-sm bg-gray-800 border-0 border-b-2 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer ${textColorVariants[selectedStatus]}`}
+            className={`block py-2.5 px-0 w-full text-sm bg-gray-800 border-0 border-b-2 appearance-none dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer ${
+              TEXT_COLORS_VARIANTS[
+                selectedStatus as keyof typeof TEXT_COLORS_VARIANTS
+              ]
+            }`}
             placeholder=" "
           >
             <option className="later-text-style" value="later">
@@ -137,7 +171,7 @@ const AddJob = ({ addJobFunction }) => {
             Status
           </label>
           {errors.status?.type === "required" && (
-            <small className="text-red-500">Choose a status for the job</small>
+            <FormErrors errorMessage="Choose a status for the job" />
           )}
         </div>
         <div className="relative z-0 w-full mb-6 group">
@@ -155,7 +189,7 @@ const AddJob = ({ addJobFunction }) => {
             Company
           </label>
           {errors.company?.type === "required" && (
-            <small className="text-red-500">Insert a company name</small>
+            <FormErrors errorMessage="Insert a company name" />
           )}
         </div>
       </div>
@@ -174,9 +208,7 @@ const AddJob = ({ addJobFunction }) => {
           Requirements
         </label>
         {errors.requirements?.type === "required" && (
-          <small className="text-red-500">
-            Insert the requirements for the job
-          </small>
+          <FormErrors errorMessage="Insert the requirements for the job" />
         )}
       </div>
       <div className="relative z-0 w-full mb-6 group">
@@ -194,18 +226,20 @@ const AddJob = ({ addJobFunction }) => {
           Extra data
         </label>
       </div>
-      <div className="flex w-full justify-between">
-        <input
-          type="button"
-          className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-          value="Clear"
-          onClick={() => reset()}
-        />
-        <input
-          type="submit"
-          className="cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
-          value="Submit"
-        />
+      <div className="flex md:flex-row flex-col gap-4 w-full justify-between">
+        <div className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center flex justify-center items-center gap-3">
+          <input
+            type="button"
+            value="Clear"
+            className="cursor-pointer"
+            onClick={() => reset()}
+          />
+          <HiOutlineTrash />
+        </div>
+        <div className="cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center flex justify-center items-center gap-3">
+          <input type="submit" value="Submit" className="cursor-pointer" />
+          <AiOutlineSend/>
+        </div>
       </div>
       <Toaster />
     </form>
