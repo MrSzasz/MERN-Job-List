@@ -25,9 +25,8 @@ import { JobInterface, statusVariants } from "../../interfaces/jobsInterfaces";
 
 type PropsType_JobDetails = {
   job: JobInterface;
-  deleteJobFunction: (jobID: string) => void;
+  deleteJobFunction: (jobID: string, modalControl: boolean) => void;
   updateJobFunction: (jobID: string, job: JobInterface) => void;
-  functionModal: () => void;
 };
 
 // ================================================================================ //
@@ -38,7 +37,6 @@ const JobDetails = ({
   job,
   deleteJobFunction,
   updateJobFunction,
-  functionModal,
 }: PropsType_JobDetails) => {
   // ========== Hooks =============================================================== //
 
@@ -66,8 +64,7 @@ const JobDetails = ({
   // Delete job in database
 
   const handleDeleteJobOnModal = (jobID: string) => {
-    deleteJobFunction(jobID);
-    functionModal();
+    deleteJobFunction(jobID, true);
   };
 
   // Update job in database
@@ -126,7 +123,7 @@ const JobDetails = ({
   return (
     // ========== Return ============================================================== //
 
-    <div className="grid place-content-center items-center h-full">
+    <div className="grid place-content-stretch items-center h-full">
       {editMode ? (
         <>
           <h3

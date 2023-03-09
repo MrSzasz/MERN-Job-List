@@ -57,7 +57,7 @@ const AddJob = ({ addJobFunction }: PropsType_AddJob) => {
 
     <form
       onSubmit={handleSubmit(addJobFunction)}
-      className="grid items-center h-full px-8 max-w-lg"
+      className="grid items-center h-full px-8"
     >
       <h3 className="flex items-center text-3xl uppercase gap-2 pb-3 m-auto ">
         Add job
@@ -236,10 +236,10 @@ const AddJob = ({ addJobFunction }: PropsType_AddJob) => {
           />
           <HiOutlineTrash />
         </div>
-        <div className="cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center flex justify-center items-center gap-3">
+        <button className="cursor-pointer text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center flex justify-center items-center gap-3">
           <input type="submit" value="Submit" className="cursor-pointer" />
           <AiOutlineSend/>
-        </div>
+        </button>
       </div>
       <Toaster />
     </form>

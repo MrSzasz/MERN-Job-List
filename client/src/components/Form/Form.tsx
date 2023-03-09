@@ -8,10 +8,11 @@ import { useState } from "react";
 
 // ========== Package components ================================================== //
 
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { Toaster } from "react-hot-toast";
 import { FiLogOut } from "react-icons/fi";
+import { GoPerson } from "react-icons/go";
 import { MdOutlineClose } from "react-icons/md";
 
 // ========== Custom components =================================================== //
@@ -72,15 +73,19 @@ const Form = () => {
         setLocation("/dashboard");
       }
     } catch (err) {
-      notifyErrorWithToast(
-        "Something went wrong, please try again later",
-        err!
-      );
+      console.log(err);
     }
   };
 
   const changeFormToRegister = () => {
     setRegisterForm((current) => !current); // Set the form to register or login
+  };
+
+  // Set token for guest
+
+  const handleGuestAccount = () => {
+    localStorage.setItem("token", "guest");
+    localStorage.setItem("auth", JSON.stringify(true));
   };
 
   // ========== Variables =========================================================== //
@@ -183,14 +188,14 @@ const Form = () => {
             )}
           </div>
         )}
-        <div className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex justify-center items-center gap-4">
+        <button className="cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 flex justify-center items-center gap-4">
           <input
             value={registerForm ? "Register" : "Login"}
             type="submit"
             className="cursor-pointer"
           />
           <FiLogOut />
-        </div>
+        </button>
       </form>
       <div className="flex flex-col items-center gap-4">
         {!registerForm && <h2>No account?</h2>}
@@ -203,14 +208,16 @@ const Form = () => {
             {registerForm ? "Cancel" : "Register"}
             {registerForm ? <MdOutlineClose /> : <FiLogOut />}
           </button>
-          {/* {!registerForm && (
+          {!registerForm && (
             <Link
+              onClick={handleGuestAccount}
               href="/dashboard"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              className="text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800 flex justify-center items-center gap-3"
             >
               Enter without account
+              <GoPerson/>
             </Link>
-          )} */}
+          )}
         </div>
       </div>
       <Toaster />

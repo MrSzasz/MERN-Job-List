@@ -14,6 +14,8 @@ import { v4 as uuidv4 } from "uuid";
 import toast, { Toaster } from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
 import { IoMdAdd } from "react-icons/io";
+import { IoCloseSharp } from "react-icons/io5";
+import { FiSearch } from "react-icons/fi";
 
 // ========== Custom components =================================================== //
 
@@ -49,12 +51,14 @@ const Dashboard = () => {
   // ========== Hooks ============================================================== //
 
   const [openModal, setOpenModal] = useState<Boolean>(false);
+  const [tokenInLocalStorage, setTokenInLocalStorage] = useState("");
   const [jobDetailsModalComponent, setJobDetailsModalComponent] =
     useState<Boolean>(true);
   const [userTabOpened, setUserTabOpened] = useState<Boolean>(false);
   const [jobsFromDB, setJobsFromDB] = useState<Array<JobInterface>>([]);
   const [jobForDetails, setJobForDetails] = useState<JobInterface>();
   const [profileInfo, setProfileInfo] = useState<UserDataInterface>();
+  const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useLocation();
   const [jobsContainer] = useAutoAnimate();
 
@@ -63,6 +67,48 @@ const Dashboard = () => {
   // Get the auth item from the local storage or redirect to the main login page
 
   !JSON.parse(localStorage.getItem("auth")!) && setLocation("/");
+
+  // Confirmation toast for delete
+
+  const confirmDelete = (jobID: string, closeModal?: boolean) => {
+    toast(
+      () => (
+        <span className="flex flex-col gap-3">
+          Do you want to delete this job?
+          <div className="flex justify-center items-center gap-3">
+            <button
+              className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-blue-800 focus:ring-4 bg-blue-900 focus:ring-blue-800"
+              onClick={() => toast.dismiss("confirmDeleteJobToast")}
+            >
+              Cancel
+            </button>
+            <button
+              className="flex w-fit items-center gap-2 hover:gap-3 px-3 py-2 text-sm font-medium text-center text-white transition-all rounded-lg hover:bg-red-800 focus:ring-4 bg-red-900 focus:ring-red-800"
+              onClick={() => {
+                toast.dismiss("confirmDeleteJobToast");
+                handleDeleteJob(jobID);
+                closeModal && controlModal();
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </span>
+      ),
+      {
+        duration: 99999999,
+        id: "confirmDeleteJobToast",
+        style: {
+          backgroundColor: "#1f2937",
+          borderRadius: "0.375rem",
+          padding: "2rem",
+          maxWidth: "64rem",
+          color: "#FFFFFF",
+          width: "fit-content",
+        },
+      }
+    );
+  };
 
   // Controls the modal window
 
@@ -78,51 +124,87 @@ const Dashboard = () => {
     setUserTabOpened((current) => !current);
   };
 
+  // Hide the warning for guest accounts
+
+  const hideWarning = () => {
+    document.getElementById("warningGuest")!.classList.add("hidden");
+  };
+
   // Delete a job from the database and local array of jobs
 
   const handleDeleteJob = async (jobID: string) => {
-    try {
-      await axios_JOBS_deleteData(jobID, "jobs"); // Delete job in the database
-
+    if (tokenInLocalStorage === "guest") {
+      const arrayWithDeletedJob = jobsFromDB.filter((job) => job.id !== jobID);
       setJobsFromDB(jobsFromDB.filter((job) => job.id !== jobID)); // Delete jobs in the local array
-    } catch (err) {
-      // Notify the error with the handler
+      localStorage.setItem("guestJobs", JSON.stringify(arrayWithDeletedJob)); // Save array in local storage
+      toast.success("Job deleted successfully!", {
+        style: { backgroundColor: "#1F2937", color: "#FFFFFF" },
+      });
+    } else {
+      try {
+        await axios_JOBS_deleteData(jobID, "jobs"); // Delete job in the database
 
-      notifyErrorWithToast("Error deleting job, please try again later", err!);
+        setJobsFromDB(jobsFromDB.filter((job) => job.id !== jobID)); // Delete jobs in the local array
+      } catch (err) {
+        // Notify the error with the handler
+
+        notifyErrorWithToast(
+          "Error deleting job, please try again later",
+          err!
+        );
+      }
     }
   };
 
   // Update a job from the database and the local array of jobs
 
   const handleUpdateJob = (id: string, jobForUpdate: JobInterface) => {
-    try {
-      axios_JOBS_updateData(jobForUpdate, "jobs"); // Update the job data
+    if (tokenInLocalStorage === "guest") {
       jobsFromDB[jobsFromDB.findIndex((job) => job.id === id)] = jobForUpdate; // Update the job in the local array of jobs
-    } catch (err) {
-      // Notify the error with the handler
+      localStorage.setItem("guestJobs", JSON.stringify(jobsFromDB)); // Save array in local storage
+      toast.success("Job updated successfully!", {
+        style: {
+          backgroundColor: "green",
+          color: "white",
+        },
+      });
+    } else {
+      try {
+        axios_JOBS_updateData(jobForUpdate, "jobs"); // Update the job data
+        jobsFromDB[jobsFromDB.findIndex((job) => job.id === id)] = jobForUpdate; // Update the job in the local array of jobs
+      } catch (err) {
+        // Notify the error with the handler
 
-      notifyErrorWithToast("Error editing job, please try again later", err!);
+        notifyErrorWithToast("Error editing job, please try again later", err!);
+      }
     }
   };
 
   // Get jobs from the database and save them to the local array of jobs
 
   const getJobsFromDatabase = async () => {
-    try {
-      const userData : UserDataInterface = await axios_JOBS_getData(
-        "jobs",
-        localStorage.getItem("token")! // Get the token from the local storage
-      );
+    if (localStorage.getItem("token")! === "guest") {
+      const guestJobsInLocalStorage = localStorage.getItem("guestJobs");
+      guestJobsInLocalStorage
+        ? setJobsFromDB(JSON.parse(guestJobsInLocalStorage))
+        : localStorage.setItem("guestJobs", JSON.stringify([]));
+    } else {
+      try {
+        const userData: UserDataInterface = await axios_JOBS_getData(
+          "jobs",
+          localStorage.getItem("token")! // Get the token from the local storage
+        );
 
-      setJobsFromDB(userData?.jobs); // Save the jobs in state
-      setProfileInfo(userData); // Save the profile information
-    } catch (err) {
-      // Notify the error with the handler
+        setJobsFromDB(userData?.jobs); // Save the jobs in state
+        setProfileInfo(userData); // Save the profile information
+      } catch (err) {
+        // Notify the error with the handler
 
-      notifyErrorWithToast(
-        "Error getting jobs from database, please try again later",
-        err!
-      );
+        notifyErrorWithToast(
+          "Error getting jobs from database, please try again later",
+          err!
+        );
+      }
     }
   };
 
@@ -135,43 +217,52 @@ const Dashboard = () => {
       dateStyle: "short",
     });
 
-    try {
-      // Creates the new job
+    // Creates the new job
 
-      const dataToAdd = {
-        ...data, // Grab the data from the form
-        date: timeFormat.format(new Date()), // Add the date formatted with the function
-        id: uuidv4(), // Creates an unique id with uuid
-      };
+    const dataToAdd = {
+      ...data, // Grab the data from the form
+      date: timeFormat.format(new Date()), // Add the date formatted with the function
+      id: uuidv4(), // Creates an unique id with uuid
+    };
 
-      // Add a toast to the response of the request
-
-      await toast.promise(
-        axios_JOBS_addData(
-          dataToAdd,
-          "jobs" // Path to the back end
-        ),
-        {
-          loading: "Loading...",
-          success: "Job added successfully",
-          error: "Error adding job, please try again later", // Handle the error message for the popup
-        },
-        {
-          style: { backgroundColor: "#1F2937", color: "#FFFFFF" }, // And the styles
-        }
-      );
-
+    if (tokenInLocalStorage === "guest") {
       jobsFromDB.push(dataToAdd); // Add the job to the local job array
-    } catch (err) {
-      // Notify the error with the handler
+      localStorage.setItem("guestJobs", JSON.stringify(jobsFromDB)); // Save array in local storage
+      toast.success("Job saved successfully!", {
+        style: { backgroundColor: "#1F2937", color: "#FFFFFF" },
+      });
+    } else {
+      try {
+        // Add a toast to the response of the request
 
-      notifyErrorWithToast("Error adding job, please try again later", err!);
+        await toast.promise(
+          axios_JOBS_addData(
+            dataToAdd,
+            "jobs" // Path to the back end
+          ),
+          {
+            loading: "Loading...",
+            success: "Job added successfully",
+            error: "Error adding job, please try again later", // Handle the error message for the popup
+          },
+          {
+            style: { backgroundColor: "#1F2937", color: "#FFFFFF" }, // And the styles
+          }
+        );
+
+        jobsFromDB.push(dataToAdd); // Add the job to the local job array
+      } catch (err) {
+        // Notify the error with the handler
+
+        notifyErrorWithToast("Error adding job, please try again later", err!);
+      }
     }
   };
 
   // ========== useEffects ============================================================== //
 
   useEffect(() => {
+    setTokenInLocalStorage(localStorage.getItem("token")!);
     getJobsFromDatabase();
   }, []);
 
@@ -179,24 +270,63 @@ const Dashboard = () => {
 
   return (
     <>
-      <Navbar controlUserTab={controlUserTab} userEmail={profileInfo?.email!} />
+      <Navbar
+        controlUserTab={controlUserTab}
+        userEmail={profileInfo?.email!}
+        userType={tokenInLocalStorage}
+      />
+      {tokenInLocalStorage == "guest" && (
+        <div
+          id="warningGuest"
+          className="flex bg-red-600 text-white px-8 py-1 justify-between"
+        >
+          <p>
+            You're using this app without an account, your jobs will be saved
+            ONLY in this device.
+          </p>
+          <button onClick={hideWarning} className="w-fit self-start">
+            <IoCloseSharp size={25} color="white" />
+          </button>
+        </div>
+      )}
+      <div className="relative md:w-1/2 md:mx-auto mx-8 mt-2">
+        <input
+          type="search"
+          name="search"
+          id="search"
+          placeholder="Search..."
+          className="block py-2.5 px-0 text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 w-full"
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <span className="absolute right-2 bottom-4">
+          <FiSearch />
+        </span>
+      </div>
       <div className="relative">
         <div
           className="p-8 flex flex-wrap gap-4 w-full items-stretch"
           ref={jobsContainer}
         >
-          {jobsFromDB ? (
-            jobsFromDB.map((job, i) => (
-              <JobCard
-                key={i}
-                job={job}
-                functionModal={controlModal}
-                deleteJobFunction={handleDeleteJob}
-              />
-            ))
-          ) : (
+          {jobsFromDB &&
+            jobsFromDB
+              .filter((job) => {
+                return searchQuery.toLowerCase() === ""
+                  ? job
+                  : job.title.toLowerCase().includes(searchQuery);
+              })
+              .map((job, i) => (
+                <JobCard
+                  key={i}
+                  job={job}
+                  functionModal={controlModal}
+                  deleteJobFunction={confirmDelete}
+                />
+              ))}
+          {jobsFromDB.length === 0 && (
             <div className="h-full w-screen grid place-content-center">
-              <h2>No saved jobs yet :c</h2>
+              <h2 className="text-xl">
+                No saved jobs yet :c <br /> Click + to add a job
+              </h2>
             </div>
           )}
         </div>
@@ -208,7 +338,11 @@ const Dashboard = () => {
         </button>
         <AnimatePresence>
           {userTabOpened && (
-            <Profile userInfo={profileInfo!} controlUserTab={controlUserTab} />
+            <Profile
+              userInfo={profileInfo!}
+              controlUserTab={controlUserTab}
+              userType={tokenInLocalStorage}
+            />
           )}
         </AnimatePresence>
       </div>
@@ -217,9 +351,8 @@ const Dashboard = () => {
           <PopUpModal modalControls={controlModal}>
             {jobDetailsModalComponent ? (
               <JobDetails
-                functionModal={controlModal}
                 job={jobForDetails!}
-                deleteJobFunction={handleDeleteJob}
+                deleteJobFunction={confirmDelete}
                 updateJobFunction={handleUpdateJob}
               />
             ) : (

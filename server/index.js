@@ -32,7 +32,7 @@ const cookieParser = require('cookie-parser')
 // ===== Routes ============================================================ //
 
 const userRoutes = require("./routes/userRoutes")
-const jobsRoutes = require("./routes/jobsRouter");
+const jobsRoutes = require("./routes/jobsRoutes");
 
 
 // =========================================================================== //

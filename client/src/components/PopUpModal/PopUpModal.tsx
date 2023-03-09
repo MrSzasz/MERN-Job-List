@@ -47,7 +47,7 @@ const PopUpModal = ({ children, modalControls }: PropsType_PopUpModal) => {
         exit={{
           y: "-100",
         }}
-        className="relative bg-gray-800 rounded-md p-8 max-w-5xl md:max-w-3xl m-auto max-h-[90vh] overflow-y-auto w-fit"
+        className="relative bg-gray-800 rounded-md p-8 max-w-5xl md:max-w-3xl m-auto max-h-[90vh] overflow-y-auto md:w-1/2"
       >
         <button className="absolute top-4 right-4 z-10" onClick={modalControls}>
           <IoCloseSharp size={25} color="white" />

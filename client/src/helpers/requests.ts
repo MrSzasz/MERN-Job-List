@@ -5,7 +5,6 @@
 // ========== Package components ================================================== //
 
 import axios from "axios";
-import { toast } from "react-hot-toast";
 
 // ========== Interfaces ========================================================== //
 
@@ -23,13 +22,6 @@ import { handleRequestErrors, handleUnexpectedRequestErrors } from "./errors";
 
 const serverBaseUrl = import.meta.env.VITE_SERVER_BASE_URL;
 
-// ========== Functions =========================================================== //
-
-const notify = (message: string) =>
-  toast.error(message, {
-    style: { backgroundColor: "#ef4444", color: "white" },
-  });
-
 /* ============================== JOBS ============================== */
 
 // Get all jobs from the database
@@ -43,7 +35,7 @@ export const axios_JOBS_getData = async (
       // Send the token in the header of the request
 
       headers: {
-        "x-access-token": tokenFromUser,
+        Authorization: `Bearer ${tokenFromUser}`,
       },
     });
 
@@ -70,7 +62,7 @@ export const axios_JOBS_updateData = async (
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Send the stored token from the user
       },
     });
     console.log(data);
@@ -95,7 +87,7 @@ export const axios_JOBS_deleteData = async (
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Send the stored token from the user
       },
       data: { jobID: idToDelete }, // Send the id to delete
     });
@@ -124,7 +116,7 @@ export const axios_JOBS_addData = async (
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
-          "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Send the stored token from the user
         },
       }
     );
@@ -224,7 +216,7 @@ export const axios_USERS_deleteData = async (
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "x-access-token": localStorage.getItem("token"), // Send the stored token from the user
+        Authorization: `Bearer ${localStorage.getItem("token")}`, // Send the stored token from the user
       },
       data: { id: idToDelete },
     });

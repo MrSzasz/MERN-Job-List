@@ -18,7 +18,7 @@ const Home = () => {
       <div className="relative hidden md:block col-start-1 col-end-3">
         <img
           className="h-full object-cover object-center"
-          src="https://static.toiimg.com/photo/msid-78251835/78251835.jpg"
+          src="https://i.imgur.com/twBcBWA.jpg"
         />
         <div className="absolute h-full w-full  backdrop-blur-sm inset-0 grid place-content-center">
           <div className="absolute w-full h-full bg-black opacity-75 -z-10"></div>

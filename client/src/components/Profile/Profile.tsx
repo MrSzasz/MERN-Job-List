@@ -31,6 +31,7 @@ import { UserDataInterface } from "../../interfaces/jobsInterfaces";
 type PropsType_Profile = {
   controlUserTab: () => void;
   userInfo: UserDataInterface;
+  userType: string;
 };
 
 // ========== Helpers ============================================================= //
@@ -41,7 +42,7 @@ import { axios_USERS_deleteData } from "../../helpers/requests";
 // ================================= COMPONENT ==================================== //
 // ================================================================================ //
 
-const Profile = ({ controlUserTab, userInfo }: PropsType_Profile) => {
+const Profile = ({ controlUserTab, userInfo, userType }: PropsType_Profile) => {
   // ========== Hooks =============================================================== //
 
   const [deleteAccountModal, setDeleteAccountModal] = useState(false);
@@ -121,13 +122,15 @@ const Profile = ({ controlUserTab, userInfo }: PropsType_Profile) => {
           <div className="h-40 w-40 grid place-content-center bg-gray-900 rounded-full z-10 mb-4">
             <div className="relative h-32 w-32 bg-black rounded-full border-2 border-gray-900 grid place-content-center">
               <div className="h-min w-min inset-0 place-content-center text-7xl uppercase">
-                <span>{userInfo.email[0]}</span>
+                <span>{userType === "guest" ? "G" : userInfo.email[0]}</span>
               </div>
             </div>
           </div>
-          <h2 className="text-lg">{userInfo.email}</h2>
+          <h2 className="text-lg">
+            {userType === "guest" ? "Guest" : `${userInfo.email}`}
+          </h2>
           <small className="text-gray-600 uppercase w-full">
-            Created at: {userInfo.createdAt}
+            {userType === "guest" ? "" : `Created at: ${userInfo.createdAt}`}
           </small>
         </div>
         <button
@@ -136,12 +139,14 @@ const Profile = ({ controlUserTab, userInfo }: PropsType_Profile) => {
         >
           Log out <FiLogOut />
         </button>
-        <small
-          onClick={controlDeleteModal}
-          className="text-red-800 underline cursor-pointer absolute bottom-4 m-auto w-fit"
-        >
-          Delete account
-        </small>
+        {userType !== "guest" && (
+          <small
+            onClick={controlDeleteModal}
+            className="text-red-800 underline cursor-pointer absolute bottom-4 m-auto w-fit"
+          >
+            Delete account
+          </small>
+        )}
       </div>
       <AnimatePresence>
         {deleteAccountModal ? (

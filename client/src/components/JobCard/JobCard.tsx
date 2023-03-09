@@ -22,10 +22,6 @@ type PropsType_JobCard = {
   deleteJobFunction: (jobId: string) => void;
 };
 
-// ========== Styles ============================================================== //
-
-import "./JobCard.css";
-
 // ========== Helpers ============================================================= //
 
 // ================================================================================ //
@@ -71,7 +67,15 @@ const JobCard = ({
               src={`https://s2.googleusercontent.com/s2/favicons?domain_url=${job.link}`}
               alt="af"
             />
-            <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white capitalize previewTitle">
+            <h5
+              className="text-xl font-bold tracking-tight text-gray-900 dark:text-white capitalize"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
               {job.title.toLowerCase()}
             </h5>
           </div>
@@ -83,7 +87,16 @@ const JobCard = ({
             {job.status}
           </small>
         </div>
-        <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 previewText">
+        <p
+          className="mb-3 font-normal text-gray-700 dark:text-gray-400"
+          style={{
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            cursor: "default",
+          }}
+        >
           {job.description}
         </p>
         <div className="flex w-full justify-between flex-wrap">

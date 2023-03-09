@@ -2,8 +2,7 @@ const jwt = require('jsonwebtoken');
 const secretKeyForJWT = process.env.JWT_SECRET_KEY_FOR_ENCRYPT
 
 function validateToken(req, res, next) {
-    const tokenFromUser = req.headers["x-access-token"] // Get the token from the header
-
+    const tokenFromUser = req.headers["authorization"] // Get the token from the header
 
     if (!tokenFromUser) {
 
@@ -12,21 +11,35 @@ function validateToken(req, res, next) {
         return res.status(401).json({ // Status code 401 = Not authorized
             auth: false,
             token: null,
-            popUpMessage: "Token not provided",
+            popUpMessage: "Invalid token",
         })
     }
 
-    // Verify the token with JWT
+    // Verify if the token is encoded with Bearer authentication
 
-    jwt.verify(tokenFromUser, secretKeyForJWT, (err, data) => {
-        if (err) return res.status(401).json({ // Status code 401 = Not authorized
-            message: "Invalid token"
+    if (typeof tokenFromUser !== undefined || tokenFromUser !== "undefined") {
+        // Verify the token with JWT
+
+        const decodedToken = tokenFromUser.split(" ")[1] // Remove the "Bearer" from the token
+
+
+        jwt.verify(decodedToken, secretKeyForJWT, (err, data) => {
+            if (err) return res.status(401).json({ // Status code 401 = Not authorized
+                message: "Invalid token"
+            })
+
+            req.userData = data
+
+            next()
         })
+    } else {
+        return res.status(401).json({ // Status code 401 = Not authorized
+            auth: false,
+            token: null,
+            popUpMessage: "Invalid token",
+        })
+    }
 
-        req.userData = data
-        
-        next()
-    })
 }
 
 module.exports = {
